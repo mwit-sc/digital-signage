@@ -132,9 +132,9 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-10">
+    <div className="min-h-screen flex items-center justify-center">
       {/* Aspect ratio container for signage */}
-      <div className="w-full max-w-screen-4k aspect-video relative">
+      <div className="w-screen h-screen relative">
         {/* Transparent overlay to show background behind */}
         <div className="absolute inset-0 bg-transparent"></div>
 
