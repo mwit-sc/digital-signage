@@ -78,20 +78,6 @@ const dummyData: ApiResponse = {
 
 export default function Home() {
   const [data, setData] = useState<ApiResponse>(dummyData);
-
-  // For a live dashboard, consider fetching data periodically:
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const res = await fetch('/api/air-quality');
-  //     const result = await res.json();
-  //     if (result.status === 'success') setData(result);
-  //   };
-  //   fetchData();
-  //   const interval = setInterval(fetchData, 60000);
-  //   return () => clearInterval(interval);
-  // }, []);
-
-  // Destructure API data
   const {
     city,
     state,
@@ -101,8 +87,6 @@ export default function Home() {
   } = data.data;
   const aqi = pollution.aqius;
   const lastUpdated = new Date(pollution.ts);
-
-  // Determine AQI zone, recommendation, and background gradient
   let zone = "";
   let recommendation = "";
   let aqiBgGradient = "";
@@ -131,77 +115,40 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-10">
-      {/* Container locked to 16:9 ratio */}
       <div className="w-full max-w-screen-4k aspect-video relative">
-        {/* Transparent background so the layout image shows */}
         <div className="absolute inset-0 bg-transparent"></div>
-
-        {/* Header */}
-        <header className="absolute top-0 left-0 right-0 p-8 flex justify-between items-center">
+        <header className="absolute top-0 left-0 right-0 p-8 flex justify-between items-top">
           <div className="flex items-center">
-            {/* Uncomment below to add your logo */}
-            {/* <img src="/logo.png" alt="Logo" className="h-20 mr-4" /> */}
-            <h1 className="text-6xl font-extrabold text-white drop-shadow-lg">
-              Air Quality Dashboard
+            <h1 className="text-6xl font-extrabold text-white drop-shadow-lg leading-[15px]">
+              <p className="">รายงานคุณภาพอากาศ</p><br />
+              <p className="text-4xl mt-2">Air Quality Report</p>
             </h1>
           </div>
-          <div className="text-4xl text-white drop-shadow-lg">
+            <div className="text-4xl text-white drop-shadow-lg ">
             {currentTime.toLocaleTimeString()}
-          </div>
+            </div>
         </header>
-
-        {/* Main Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center p-12 space-y-12">
-          {/* AQI Card */}
           <div
-            className={`${aqiBgGradient} bg-opacity-70 rounded-xl p-10 flex flex-col items-center shadow-2xl`}
+            className={`${aqiBgGradient} bg-opacity-70 rounded-xl p-10 flex items-center shadow-2xl`}
           >
-            {/* Icon for AQI (e.g., a clock/gauge icon) */}
-            <svg
-              className="w-24 h-24 text-white mb-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 8v4l3 3"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 2a10 10 0 100 20 10 10 0 000-20z"
-              />
-            </svg>
-            <div className="text-9xl font-extrabold text-white drop-shadow-lg">
-              {aqi}
-            </div>
-            <div className="mt-4 text-4xl font-bold text-white drop-shadow-lg">
-              {zone}
-            </div>
-            <div className="mt-8 text-2xl text-white drop-shadow-lg text-center max-w-3xl">
-              {recommendation}
+            <img src="/face/red.svg" alt="Air Quality Icon" className="w-96" />
+            <div>
+              <div className="text-9xl font-extrabold text-white drop-shadow-lg">
+                {aqi} <small className="text-5xl">µg/m³</small>
+              </div>
+              <div className="mt-4 text-4xl font-bold text-white drop-shadow-lg">
+                {zone}
+              </div>
+              <div className="mt-8 text-2xl text-white drop-shadow-lg text-center max-w-3xl">
+                {recommendation}
+              </div>
             </div>
           </div>
-
-          {/* Additional Data Cards */}
           <div className="grid grid-cols-2 gap-12 w-full max-w-6xl">
-            {/* Weather Card */}
-            <div className="bg-white/30 rounded-xl p-8 flex flex-col items-center shadow-xl">
+            <div className="bg-black/40 rounded-xl p-8 flex flex-col items-center shadow-xl">
               <div className="flex items-center mb-4">
-                {/* Weather Icon */}
-                <svg
-                  className="w-16 h-16 text-yellow-300 mr-3"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4.22 2.22a1 1 0 011.415 0l.707.707a1 1 0 01-1.414 1.414l-.708-.707a1 1 0 010-1.414zM18 9a1 1 0 110 2h-1a1 1 0 110-2h1zm-2.22 5.78a1 1 0 010 1.415l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 0zM10 16a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm-4.22-2.22a1 1 0 011.414 0l.707.707a1 1 0 01-1.414 1.414l-.707-.707a1 1 0 010-1.414zM4 9a1 1 0 110 2H3a1 1 0 110-2h1zm2.22-5.78a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0z" />
-                  <path d="M10 5a5 5 0 100 10A5 5 0 0010 5z" />
-                </svg>
+              <img src="/sun.svg" alt="" className="w-20" />
                 <h2 className="text-4xl font-bold text-white drop-shadow-lg">
                   Weather
                 </h2>
@@ -219,22 +166,9 @@ export default function Home() {
                 Wind Speed: {weather.ws} m/s
               </p>
             </div>
-            {/* Location Card */}
-            <div className="bg-white/30 rounded-xl p-8 flex flex-col items-center shadow-xl">
+            <div className="bg-black/40 rounded-xl p-8 flex flex-col items-center shadow-xl">
               <div className="flex items-center mb-4">
-                {/* Location Icon */}
-                <svg
-                  className="w-16 h-16 text-blue-300 mr-3"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M5.05 4.05a7 7 0 019.9 0c2.73 2.73 2.73 7.17 0 9.9l-4.95 4.95a.5.5 0 01-.7 0l-4.95-4.95c-2.73-2.73-2.73-7.17 0-9.9zM10 7a3 3 0 100 6 3 3 0 000-6z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+              <img src="/location.svg" alt="" className="rotate-[211deg] h-20" />
                 <h2 className="text-4xl font-bold text-white drop-shadow-lg">
                   Location
                 </h2>
