@@ -286,7 +286,7 @@ export default async function Home() {
             {/* Divider */}
             <div className="h-10 w-[2px] bg-white opacity-60"></div>
             <div className="text-left leading-tight">
-              <p>ขับเคลื่อนโดยคณะกรรมการสภานักเรียน</p>
+              <p>ขับเคลื่อนโดยคณะกรรมการสภานักเรียนรุ่นที่ 33</p>
               <p>Developed by Student Committee</p>
             </div>
           </div>
