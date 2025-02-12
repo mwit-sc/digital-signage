@@ -136,7 +136,7 @@ export default function Home() {
       {/* Aspect ratio container for signage */}
       <div className="w-screen h-screen relative">
         {/* Transparent overlay to show background behind */}
-        <div className="absolute inset-0 bg-transparent"></div>
+        <div className="absolute inset-0 bg-[url('/sky.webp')] bg-cover bg-center"></div>
 
         {/* Header */}
         <header className="absolute top-0 left-0 right-0 p-8 flex justify-between items-start">
