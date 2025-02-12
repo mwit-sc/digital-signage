@@ -183,13 +183,31 @@ export default function Home() {
             </div>
           </div>
         </div>
-
-        {/* Footer */}
-        <footer className="absolute bottom-0 left-0 right-0 text-center p-8">
-          <p className="text-2xl text-white drop-shadow-lg">
-            Last updated: {lastUpdated.toLocaleString()}
+        <footer className="absolute bottom-0 left-0 right-0 pb-4 flex justify-between items-center">
+          <div className="flex items-center space-x-4 text-white text-2xl drop-shadow-lg ml-10">
+          <img src="/sc.png" alt="SC Logo" className="h-20" />
+          <div className="h-10 w-[2px] bg-black"></div>
+            <div className="text-left">
+              <p>ขับเคลื่อนโดยคณะกรรมการสภานักเรียน</p>
+              <p>Develop by Student Committee</p>
+            </div>
+          </div>
+          <p className="text-white text-2xl drop-shadow-lg mr-10">
+            Last update: {lastUpdated.toLocaleDateString("en-GB", {
+              weekday: "long",
+              day: "2-digit",
+              month: "long",
+              year: "numeric",
+            })}{" "}
+            {lastUpdated.toLocaleTimeString("en-GB", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false,
+            })}
           </p>
         </footer>
+
+
       </div>
     </div>
   );
