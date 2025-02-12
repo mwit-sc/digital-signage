@@ -84,8 +84,7 @@ export default function Home() {
   // Fetch data with SWR (refresh every 15 minutes = 900,000 ms)
   const { data: fetchedData } = useSWR<ApiResponse>(
     "/api/air-quality",
-    fetcher,
-    { refreshInterval: 15 * 60 * 1000 }
+    fetcher
   );
 
   // If there's an error or the API hasn't returned data yet, use dummy data
@@ -168,7 +167,7 @@ export default function Home() {
         </header>
 
         {/* Main Content */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-12 space-y-12">
+        <div className="absolute mx-auto w-full h-full my-auto inset-0 flex flex-col items-center justify-center p-12 space-y-12">
           {/* AQI Card */}
           <div
             className={`${aqiBgGradient} bg-opacity-70 rounded-xl p-8 flex items-center shadow-2xl max-w-5xl w-full`}
