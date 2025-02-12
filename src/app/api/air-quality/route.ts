@@ -2,9 +2,11 @@ import { NextResponse } from 'next/server';
 
 const API_URL = 'https://api.airvisual.com/v2/city';
 
+export const runtime = "edge";
+
 export async function GET() {
   try {
-    if (!process.env.AIRVISUAL_API_KEY) {
+    if (!process.env.IQAIR_KEY) {
         return NextResponse.json(
             { error: 'Missing AIRVISUAL_API_KEY environment variable' },
             { status: 500 }
@@ -15,7 +17,7 @@ export async function GET() {
     apiDest.searchParams.set('city', 'Salaya');
     apiDest.searchParams.set('state', 'Nakhon-pathom');
     apiDest.searchParams.set('country', 'Thailand');
-    apiDest.searchParams.set('key', process.env.AIRVISUAL_API_KEY);
+    apiDest.searchParams.set('key', process.env.IQAIR_KEY);
 
     const response = await fetch(apiDest, {
       next: { revalidate: 900 }, // Revalidate every 15 minutes

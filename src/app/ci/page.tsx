@@ -1,4 +1,3 @@
-import Image from "next/image";
 export default function Home() {
   return (
     <div className="m-5 bg-white bg-opacity-25 w-[calc(100vw-2.5rem)] h-[calc(100vh-2.5rem)] flex justify-center items-center rounded-xl ">
