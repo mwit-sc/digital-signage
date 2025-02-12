@@ -115,14 +115,25 @@ export default function Home() {
   } else if (aqi <= 100) {
     zone = "Moderate";
     recommendation =
-      "Air quality is acceptable. Sensitive groups should take caution.";
+      "Air quality is acceptable. Some pollutants may be a concern for sensitive individuals.";
     aqiBgGradient = "bg-gradient-to-r from-yellow-400 to-yellow-600";
-  } else {
-    zone = "Danger";
+  } else if (aqi <= 150) {
+    zone = "Unhealthy for Sensitive Groups";
     recommendation =
-      "Air quality is unhealthy. Limit outdoor activities and consider wearing a mask.";
+      "Members of sensitive groups may experience health effects. The general public is unlikely to be affected.";
+    aqiBgGradient = "bg-gradient-to-r from-orange-400 to-orange-600";
+  } else if (aqi <= 200) {
+    zone = "Unhealthy";
+    recommendation =
+      "Everyone may experience health effects; sensitive groups may have more serious health issues. Consider reducing outdoor activity.";
     aqiBgGradient = "bg-gradient-to-r from-red-500 to-red-600";
+  } else {
+    zone = "Very Unhealthy";
+    recommendation =
+      "Health alert: Everyone may experience more serious health effects. Avoid outdoor activities if possible.";
+    aqiBgGradient = "bg-gradient-to-r from-purple-500 to-purple-700";
   }
+  
 
   // Current time (for the header clock)
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -136,7 +147,7 @@ export default function Home() {
       {/* Aspect ratio container for signage */}
       <div className="w-screen h-screen relative">
         {/* Transparent overlay to show background behind */}
-        <div className="absolute inset-0 bg-[url('/sky.webp')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-transparent"></div>
 
         {/* Header */}
         <header className="absolute top-0 left-0 right-0 p-8 flex justify-between items-start">
