@@ -1,9 +1,3 @@
-"use client";
-
-import useSWR from "swr";
-import { useState, useEffect } from "react";
-
-// Type definitions for the API response
 interface Pollution {
   ts: string;
   aqius: number;
@@ -77,16 +71,40 @@ const dummyData: ApiResponse = {
   },
 };
 
-// Simple fetcher for useSWR
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const API_URL = 'https://api.airvisual.com/v2/city';
 
-export default function Home() {
+export const runtime = "edge";
+
+async function getData() {
+  try {
+    if (!process.env.IQAIR_KEY) {
+      throw new Error('Missing AIRVISUAL_API_KEY environment variable');
+    }
+
+    const apiDest = new URL(API_URL);
+    apiDest.searchParams.set('city', 'Salaya');
+    apiDest.searchParams.set('state', 'Nakhon-pathom');
+    apiDest.searchParams.set('country', 'Thailand');
+    apiDest.searchParams.set('key', process.env.IQAIR_KEY);
+
+    const response = await fetch(apiDest, {
+      next: { revalidate: 900 }, // Revalidate every 15 minutes
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch air quality data: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch {
+    throw new Error('An error occurred while fetching air quality data');
+  }
+}
+
+export default async function Home() {
   // Fetch data with SWR (refresh every 15 minutes = 900,000 ms)
-  const { data: fetchedData } = useSWR<ApiResponse>(
-    "/api/air-quality",
-    fetcher
-  );
-
+  const fetchedData = await getData();
   // If there's an error or the API hasn't returned data yet, use dummy data
   const apiData = fetchedData?.status === "success" ? fetchedData : dummyData;
 
@@ -134,12 +152,12 @@ export default function Home() {
   }
   
 
-  // Current time (for the header clock)
-  const [currentTime, setCurrentTime] = useState(new Date());
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+  // // Current time (for the header clock)
+  // const [currentTime, setCurrentTime] = useState(new Date());
+  // useEffect(() => {
+  //   const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+  //   return () => clearInterval(timer);
+  // }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -158,12 +176,12 @@ export default function Home() {
               Air Quality Report
             </p>
           </div>
-          <div
+          {/* <div
             className="text-4xl text-white drop-shadow-lg"
             suppressHydrationWarning
           >
             {currentTime.toLocaleTimeString()}
-          </div>
+          </div> */}
         </header>
 
         {/* Main Content */}
@@ -251,7 +269,7 @@ export default function Home() {
             <div className="mt-4 text-lg">
               <p>
                 Coordinates:{" "}
-                {location.coordinates.every((val) => val === 0)
+                {location.coordinates.every((val: number) => val === 0)
                   ? "-"
                   : location.coordinates.join(", ")}
               </p>
