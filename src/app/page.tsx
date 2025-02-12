@@ -267,12 +267,13 @@ export default async function Home() {
 
             {/* Coordinates (optional) */}
             <div className="mt-4 text-lg">
-              <p>
-                Coordinates:{" "}
+                <p>
+                Station Coordinates:{" "}
                 {location.coordinates.every((val: number) => val === 0)
                   ? "-"
                   : location.coordinates.join(", ")}
-              </p>
+                {location.coordinates.join(", ") === "100.32622308, 13.79059242" ? " [MUIC]" : ""}
+                </p>
             </div>
           </div>
         </div>
@@ -299,12 +300,14 @@ export default async function Home() {
                   day: "2-digit",
                   month: "long",
                   year: "numeric",
+                  timeZone: "Asia/Bangkok",
                 }) +
                 " " +
                 lastUpdated.toLocaleTimeString("en-GB", {
                   hour: "2-digit",
                   minute: "2-digit",
                   hour12: false,
+                  timeZone: "Asia/Bangkok",
                 })}
           </p>
         </footer>
