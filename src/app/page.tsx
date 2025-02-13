@@ -39,6 +39,33 @@ interface ApiResponse {
   data: AirQualityData;
 }
 
+type AQIBreakpoint = {
+  aqiLow: number;
+  aqiHigh: number;
+  pm25Low: number;
+  pm25High: number;
+};
+
+const aqiBreakpoints: AQIBreakpoint[] = [
+  { aqiLow: 0, aqiHigh: 50, pm25Low: 0.0, pm25High: 12.0 },
+  { aqiLow: 51, aqiHigh: 100, pm25Low: 12.1, pm25High: 35.4 },
+  { aqiLow: 101, aqiHigh: 150, pm25Low: 35.5, pm25High: 55.4 },
+  { aqiLow: 151, aqiHigh: 200, pm25Low: 55.5, pm25High: 150.4 },
+  { aqiLow: 201, aqiHigh: 300, pm25Low: 150.5, pm25High: 250.4 },
+  { aqiLow: 301, aqiHigh: 400, pm25Low: 250.5, pm25High: 350.4 },
+  { aqiLow: 401, aqiHigh: 500, pm25Low: 350.5, pm25High: 500.4 }
+];
+
+function calculatePM25(aqi: number): number | null {
+  for (const range of aqiBreakpoints) {
+    if (aqi >= range.aqiLow && aqi <= range.aqiHigh) {
+      return ((aqi - range.aqiLow) / (range.aqiHigh - range.aqiLow)) * 
+             (range.pm25High - range.pm25Low) + range.pm25Low;
+    }
+  }
+  return null; // AQI out of range
+}
+
 // Dummy data with "-" placeholders
 const dummyData: ApiResponse = {
   status: "success",
@@ -103,12 +130,9 @@ async function getData() {
 }
 
 export default async function Home() {
-  // Fetch data with SWR (refresh every 15 minutes = 900,000 ms)
   const fetchedData = await getData();
-  // If there's an error or the API hasn't returned data yet, use dummy data
   const apiData = fetchedData?.status === "success" ? fetchedData : dummyData;
 
-  // Destructure data
   const {
     city,
     state,
@@ -120,7 +144,10 @@ export default async function Home() {
   const aqi = pollution.aqius;
   const lastUpdated = new Date(pollution.ts);
 
-  // Determine AQI zone, styling, recommendation
+  // Calculate PM2.5 from AQI
+  const pm25 = calculatePM25(aqi);
+
+  // Determine AQI zone, recommendation, and background gradient
   let zone = "";
   let recommendation = "";
   let aqiBgGradient = "";
@@ -198,12 +225,18 @@ export default async function Home() {
             <div>
               <div className="text-8xl font-extrabold text-white drop-shadow-lg">
                 {aqi <= 0 ? "-" : aqi}
-                <small className="text-4xl ml-2 align-super">µg/m³</small>
+                <small className="text-4xl ml-2 align-super">
+                  AQI
+                </small>
               </div>
+              <div className="text-3xl font-bold text-white drop-shadow-lg">
+                {aqi <= 0 ? "" : `PM 2.5 : ${pm25?.toFixed(1)} µg/m³`}
+              </div>
+              <div className="w-full h-1 bg-white/30 my-4 mb-6"></div>
               <div className="mt-2 text-4xl font-bold text-white drop-shadow-lg">
                 {aqi <= 0 ? "-" : zone}
               </div>
-              <div className="mt-6 text-2xl text-white drop-shadow-lg max-w-3xl leading-snug">
+              <div className="mt-3 text-2xl text-white drop-shadow-lg max-w-3xl leading-snug">
                 {aqi <= 0 ? "-" : recommendation}
               </div>
             </div>
