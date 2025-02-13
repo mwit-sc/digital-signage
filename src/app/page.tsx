@@ -207,7 +207,7 @@ export default async function Home() {
             className="text-3xl text-white drop-shadow-lg text-right"
             suppressHydrationWarning
           >
-            อยู่ระหว่างการทดสอบ<br></br>
+            อยู่ระหว่างการทดสอบระบบ<br></br>
             Under Development
           </div>
         </header>
