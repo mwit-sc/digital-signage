@@ -203,12 +203,13 @@ export default async function Home() {
               Air Quality Report
             </p>
           </div>
-          {/* <div
-            className="text-4xl text-white drop-shadow-lg"
+          <div
+            className="text-3xl text-white drop-shadow-lg text-right"
             suppressHydrationWarning
           >
-            {currentTime.toLocaleTimeString()}
-          </div> */}
+            อยู่ระหว่างการทดสอบ<br></br>
+            Under Development
+          </div>
         </header>
 
         {/* Main Content */}
@@ -230,7 +231,7 @@ export default async function Home() {
                 </small>
               </div>
               <div className="text-3xl font-bold text-white drop-shadow-lg">
-                {aqi <= 0 ? "" : `PM 2.5 : ${pm25?.toFixed(1)} µg/m³`}
+                {aqi <= 0 ? "" : `PM 2.5 : ${pm25?.toFixed(1)} µg/m³`} <small className="text-sm font-normal">(From reverse calculation)</small>
               </div>
               <div className="w-full h-1 bg-white/30 my-4 mb-6"></div>
               <div className="mt-2 text-4xl font-bold text-white drop-shadow-lg">
