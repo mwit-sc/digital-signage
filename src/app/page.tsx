@@ -188,12 +188,8 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      {/* Aspect ratio container for signage */}
       <div className="w-screen h-screen relative">
-        {/* Transparent overlay to show background behind */}
         <div className="absolute inset-0 bg-transparent"></div>
-
-        {/* Header */}
         <header className="absolute top-0 left-0 right-0 p-8 flex justify-between items-start">
           <div>
             <h1 className="text-5xl font-extrabold text-white drop-shadow-lg">
@@ -211,10 +207,7 @@ export default async function Home() {
             Under Development
           </div>
         </header>
-
-        {/* Main Content */}
         <div className="absolute mx-auto w-full h-full my-auto inset-0 flex flex-col items-center justify-center p-12 space-y-12">
-          {/* AQI Card */}
           <div
             className={`${aqiBgGradient} bg-opacity-70 rounded-xl p-8 flex items-center shadow-2xl max-w-5xl w-full`}
           >
@@ -242,26 +235,19 @@ export default async function Home() {
               </div>
             </div>
           </div>
-
-          {/* Weather Card */}
           <div className="bg-gradient-to-br from-blue-500 to-blue-300 bg-opacity-90 w-full max-w-6xl rounded-3xl p-8 flex flex-col text-white shadow-xl">
-            {/* Top Section: City/State & Big Temperature */}
             <div className="flex">
               <div className="flex-1">
                 <h2 className="text-4xl font-bold">{city === "-" ? "-" : city}, {state === "-" ? "-" : state}</h2>
                 <p className="text-xl mt-1">{country === "-" ? "-" : country}</p>
               </div>
-              {/* Weather Icon or Big Temperature */}
               <div className="flex items-center justify-end w-1/3">
                 <p className="text-6xl font-extrabold">
                   {weather.tp <= 0 ? "-" : weather.tp}°
                 </p>
               </div>
             </div>
-
-            {/* Divider & Weather Details */}
             <div className="mt-6 border-t border-white/30 pt-4 grid grid-cols-3 gap-4 text-center">
-              {/* Humidity */}
               <div>
                 <img
                   src="/humidity.svg"
@@ -273,7 +259,6 @@ export default async function Home() {
                   {weather.hu <= 0 ? "-" : weather.hu}%
                 </p>
               </div>
-              {/* Pressure */}
               <div>
                 <img
                   src="/pressure.svg"
@@ -285,7 +270,6 @@ export default async function Home() {
                   {weather.pr <= 0 ? "-" : weather.pr} hPa
                 </p>
               </div>
-              {/* Wind Speed */}
               <div>
                 <img
                   src="/wind.svg"
@@ -298,8 +282,6 @@ export default async function Home() {
                 </p>
               </div>
             </div>
-
-            {/* Coordinates (optional) */}
             <div className="mt-4 text-lg">
                 <p>
                 Station Coordinates:{" "}
