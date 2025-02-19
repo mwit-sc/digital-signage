@@ -2,7 +2,13 @@ import { NextResponse } from 'next/server';
 
 const API_URL = 'https://api.airvisual.com/v2/city';
 
-export const runtime = "edge";
+let lastFetch: {
+  data: unknown;
+  timestamp: number;
+} = {
+  data: undefined,
+  timestamp: 0,
+};
 
 export async function GET() {
   try {
@@ -12,6 +18,9 @@ export async function GET() {
             { status: 500 }
         );
     }
+    if (new Date(lastFetch.timestamp).getHours() >= new Date(Date.now()).getHours() ) {
+      return NextResponse.json(lastFetch.data, { status: 200 });
+    }
 
     const apiDest = new URL(API_URL);
     apiDest.searchParams.set('city', 'Salaya');
@@ -19,6 +28,7 @@ export async function GET() {
     apiDest.searchParams.set('country', 'Thailand');
     apiDest.searchParams.set('key', process.env.IQAIR_KEY);
 
+    console.log('Fetching air quality data from', apiDest.toString());
     const response = await fetch(apiDest, {
       next: { revalidate: 900 }, // Revalidate every 15 minutes
     });
@@ -31,6 +41,12 @@ export async function GET() {
     }
 
     const data = await response.json();
+
+    lastFetch = {
+      data,
+      timestamp: Date.now(),
+    };
+    
     return NextResponse.json(data, { status: 200 });
   } catch {
     return NextResponse.json(

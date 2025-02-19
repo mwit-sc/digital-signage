@@ -1,3 +1,9 @@
+"use client";
+
+import WeatherCard from "@/components/weather-card";
+import Image from "next/image";
+import useSWR from "swr";
+
 interface Pollution {
   ts: string;
   aqius: number;
@@ -98,46 +104,20 @@ const dummyData: ApiResponse = {
   },
 };
 
-const API_URL = 'https://api.airvisual.com/v2/city';
-
-export const runtime = "edge";
-
-async function getData() {
-  try {
-    if (!process.env.IQAIR_KEY) {
-      throw new Error('Missing AIRVISUAL_API_KEY environment variable');
+export default function Home() {
+  const { data: fetchedData } = useSWR<ApiResponse>(
+    "/api/air-quality",
+    async (url: string) => {
+      const response = await fetch(url);
+      return response.json();
     }
+  );
 
-    const apiDest = new URL(API_URL);
-    apiDest.searchParams.set('city', 'Salaya');
-    apiDest.searchParams.set('state', 'Nakhon-pathom');
-    apiDest.searchParams.set('country', 'Thailand');
-    apiDest.searchParams.set('key', process.env.IQAIR_KEY);
-
-    const response = await fetch(apiDest, {
-      next: { revalidate: 900 }, // Revalidate every 15 minutes
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch air quality data: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch {
-    throw new Error('An error occurred while fetching air quality data');
-  }
-}
-
-export default async function Home() {
-  const fetchedData = await getData();
   const apiData = fetchedData?.status === "success" ? fetchedData : dummyData;
 
   const {
     city,
     state,
-    country,
-    location,
     current: { pollution, weather },
   } = apiData.data;
 
@@ -153,30 +133,30 @@ export default async function Home() {
   let aqiBgGradient = "";
 
   if (aqi <= 50) {
-    zone = "Safe";
-    recommendation = "Air quality is excellent. Enjoy your outdoor activities!";
-    aqiBgGradient = "bg-gradient-to-r from-green-400 to-green-600";
+    zone = "ปลอดภัย";
+    recommendation = "คุณภาพอากาศดีเยี่ยม เพลิดเพลินกับกิจกรรมกลางแจ้งของคุณได้เลย";
+    aqiBgGradient = "bg-gradient-to-r from-green-400/80 to-green-600/80";
   } else if (aqi <= 100) {
-    zone = "Moderate";
+    zone = "ปานกลาง";
     recommendation =
-      "Air quality is acceptable. Some pollutants may be a concern for sensitive individuals.";
-    aqiBgGradient = "bg-gradient-to-r from-yellow-400 to-yellow-600";
+      "คุณภาพอากาศอยู่ในเกณฑ์ยอมรับได้ แต่อาจมีมลพิษที่ส่งผลกระทบต่อผู้ที่ไวต่อมลพิษ";
+    aqiBgGradient = "bg-gradient-to-r from-yellow-400/90 to-yellow-600/80";
   } else if (aqi <= 150) {
-    zone = "Unhealthy for Sensitive Groups";
+    zone = "ไม่ดีสำหรับกลุ่มเสี่ยง";
     recommendation =
-      "Members of sensitive groups may experience health effects. The general public is unlikely to be affected.";
-    aqiBgGradient = "bg-gradient-to-r from-orange-400 to-orange-600";
+      "ผู้ที่อยู่ในกลุ่มเสี่ยงอาจได้รับผลกระทบต่อสุขภาพ ส่วนประชาชนทั่วไปมีโอกาสได้รับผลกระทบน้อย";
+    aqiBgGradient = "bg-gradient-to-r from-orange-400/80 to-orange-600/80";
   } else if (aqi <= 200) {
-    zone = "Unhealthy";
+    zone = "ไม่ดีต่อสุขภาพ";
     recommendation =
-      "Everyone may experience health effects; sensitive groups may have more serious health issues. Consider reducing outdoor activity.";
-    aqiBgGradient = "bg-gradient-to-r from-red-500 to-red-600";
+      "ทุกคนอาจได้รับผลกระทบต่อสุขภาพ และกลุ่มเสี่ยงอาจมีอาการรุนแรงขึ้น ควรลดกิจกรรมกลางแจ้ง";
+    aqiBgGradient = "bg-gradient-to-r from-red-500/80 to-red-600/80";
   } else {
-    zone = "Very Unhealthy";
+    zone = "อันตรายมาก";
     recommendation =
-      "Health alert: Everyone may experience more serious health effects. Avoid outdoor activities if possible.";
-    aqiBgGradient = "bg-gradient-to-r from-purple-500 to-purple-700";
-  }
+      "แจ้งเตือนสุขภาพ: ทุกคนอาจได้รับผลกระทบที่รุนแรง หลีกเลี่ยงกิจกรรมกลางแจ้งหากเป็นไปได้";
+    aqiBgGradient = "bg-gradient-to-r from-purple-500/80 to-purple-700/80";
+  }  
   
 
   // // Current time (for the header clock)
@@ -208,15 +188,35 @@ export default async function Home() {
           </div>
         </header>
         <div className="absolute mx-auto w-full h-full my-auto inset-0 flex flex-col items-center justify-center p-12 space-y-12">
+         <WeatherCard
+            city={city}
+            state={state}
+            temperature={weather.tp}
+            humidity={weather.hu}
+            windSpeed={weather.ws}
+            pressure={weather.pr}
+            windDirection={weather.wd}
+          />
           <div
-            className={`${aqiBgGradient} bg-opacity-70 rounded-xl p-8 flex items-center shadow-2xl max-w-5xl w-full`}
+            className={`${aqiBgGradient} backdrop-blur-md bg-opacity-70 rounded-xl p-8 flex items-center shadow-2xl max-w-6xl w-full`}
           >
-            <img
+            <Image
               src="/face/red.svg"
               alt="Air Quality Icon"
               className="w-48 h-auto mr-6 drop-shadow-lg"
+              width={192}
+              height={192}
             />
-            <div>
+            <div className="absolute top-4 right-4 bg-white p-2 rounded-lg shadow-lg">
+              <Image
+                src="/air-quality-qr.png" // Replace with the actual QR code image path
+                alt="QR Code"
+                width={120}
+                height={120}
+                className="w-26 h-26"
+              />
+            </div>
+            <div className="flex-1">
               <div className="text-8xl font-extrabold text-white drop-shadow-lg">
                 {aqi <= 0 ? "-" : aqi}
                 <small className="text-4xl ml-2 align-super">
@@ -224,35 +224,38 @@ export default async function Home() {
                 </small>
               </div>
               <div className="text-3xl font-bold text-white drop-shadow-lg">
-                {aqi <= 0 ? "" : `PM 2.5 : ${pm25?.toFixed(1)} µg/m³`} <small className="text-sm font-normal">(From reverse calculation)</small>
+                {aqi <= 0 ? "" : `PM 2.5 : ~ ${pm25?.toFixed(1)} µg/m³`} <small className="text-sm font-lg">{"( จากการคำนวณย้อนกลับ )"}</small>
               </div>
               <div className="w-full h-1 bg-white/30 my-4 mb-6"></div>
               <div className="mt-2 text-4xl font-bold text-white drop-shadow-lg">
                 {aqi <= 0 ? "-" : zone}
               </div>
-              <div className="mt-3 text-2xl text-white drop-shadow-lg max-w-3xl leading-snug">
+              <div className="mt-3 text-3xl text-white drop-shadow-lg max-w-3xl leading-snug">
                 {aqi <= 0 ? "-" : recommendation}
               </div>
             </div>
           </div>
-          <div className="bg-gradient-to-br from-blue-500 to-blue-300 bg-opacity-90 w-full max-w-6xl rounded-3xl p-8 flex flex-col text-white shadow-xl">
-            <div className="flex">
+          {/* <div className="bg-gradient-to-br from-blue-500 to-blue-300 bg-opacity-90 w-max max-w-3xl rounded-3xl p-8 flex-row flex text-white shadow-xl">
+            <div className="flex-col">
+              <div className="flex items-center justify-start w-1/3">
+                <p className="text-9xl font-extrabold">
+                  {weather.tp <= 0 ? "-" : weather.tp}°
+                </p>
+              </div>
               <div className="flex-1">
                 <h2 className="text-4xl font-bold">{city === "-" ? "-" : city}, {state === "-" ? "-" : state}</h2>
                 <p className="text-xl mt-1">{country === "-" ? "-" : country}</p>
               </div>
-              <div className="flex items-center justify-end w-1/3">
-                <p className="text-6xl font-extrabold">
-                  {weather.tp <= 0 ? "-" : weather.tp}°
-                </p>
-              </div>
             </div>
-            <div className="mt-6 border-t border-white/30 pt-4 grid grid-cols-3 gap-4 text-center">
+            <div className="border border-white/30 mx-10" />
+            <div className=" pt-4 flex-col space-y-2 text-center">
               <div>
-                <img
+                <Image
                   src="/humidity.svg"
                   alt="Humidity Icon"
                   className="mx-auto w-8 h-8 mb-2"
+                  width={32}
+                  height={32}
                 />
                 <p className="text-lg">Humidity</p>
                 <p className="text-lg font-semibold">
@@ -260,10 +263,12 @@ export default async function Home() {
                 </p>
               </div>
               <div>
-                <img
+                <Image
                   src="/pressure.svg"
                   alt="Pressure Icon"
                   className="mx-auto w-8 h-8 mb-2"
+                  width={32}
+                  height={32}
                 />
                 <p className="text-lg">Pressure</p>
                 <p className="text-lg font-semibold">
@@ -271,10 +276,12 @@ export default async function Home() {
                 </p>
               </div>
               <div>
-                <img
+                <Image
                   src="/wind.svg"
                   alt="Wind Icon"
                   className="mx-auto w-8 h-8 mb-2"
+                  width={32}
+                  height={32}
                 />
                 <p className="text-lg">Wind</p>
                 <p className="text-lg font-semibold">
@@ -282,23 +289,15 @@ export default async function Home() {
                 </p>
               </div>
             </div>
-            <div className="mt-4 text-lg">
-                <p>
-                Station Coordinates:{" "}
-                {location.coordinates.every((val: number) => val === 0)
-                  ? "-"
-                  : location.coordinates.join(", ")}
-                {location.coordinates.join(", ") === "100.32622308, 13.79059242" ? " [MUIC]" : ""}
-                </p>
-            </div>
-          </div>
+          
+          </div> */}
         </div>
 
         {/* Footer */}
         <footer className="absolute bottom-0 left-0 right-0 pb-4 flex justify-between items-center">
           {/* Left side: logo + text */}
           <div className="flex items-center space-x-4 text-white text-2xl drop-shadow-lg ml-10">
-            <img src="/sc.png" alt="SC Logo" className="h-20" />
+            <Image src="/sc.png" alt="SC Logo" className="h-20" width={80} height={80} />
             {/* Divider */}
             <div className="h-10 w-[2px] bg-white opacity-60"></div>
             <div className="text-left leading-tight">
@@ -308,17 +307,17 @@ export default async function Home() {
           </div>
           {/* Right side: last update */}
           <p className="text-white text-2xl drop-shadow-lg mr-10">
-            Last update:{" "}
+            อัพเดทล่าสุด:{" "}
             {pollution.ts === "-"
               ? "-"
               : lastUpdated.toLocaleDateString("en-GB", {
-                  weekday: "long",
+
                   day: "2-digit",
                   month: "long",
                   year: "numeric",
                   timeZone: "Asia/Bangkok",
                 }) +
-                " " +
+                " - " +
                 lastUpdated.toLocaleTimeString("en-GB", {
                   hour: "2-digit",
                   minute: "2-digit",
