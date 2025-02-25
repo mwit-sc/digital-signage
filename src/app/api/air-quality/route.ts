@@ -2,12 +2,41 @@ import { NextResponse } from 'next/server';
 
 const API_URL = 'https://api.airvisual.com/v2/city';
 
+type ApiResponse = {
+  status: "success" | "fail";
+  data: {
+    city: string;
+    state: string;
+    country: string;
+    location: {
+      type: "Point";
+      coordinates: [number, number];
+    };
+    current: {
+      pollution: {
+        ts: string; // ISO timestamp
+        aqius: number; // AQI (US)
+        mainus: string; // Main pollutant (US)
+        aqicn: number; // AQI (China)
+        maincn: string; // Main pollutant (China)
+      };
+      weather: {
+        ts: string; // ISO timestamp
+        tp: number; // Temperature (°C)
+        pr: number; // Pressure (hPa)
+        hu: number; // Humidity (%)
+        ws: number; // Wind speed (m/s)
+        wd: number; // Wind direction (°)
+        ic: string; // Weather icon code
+      };
+    };
+  };
+};
+
 let lastFetch: {
-  data: unknown;
-  timestamp: number;
+  data: ApiResponse | undefined;
 } = {
   data: undefined,
-  timestamp: 0,
 };
 
 export async function GET() {
@@ -18,8 +47,10 @@ export async function GET() {
             { status: 500 }
         );
     }
-    if ((new Date(lastFetch.timestamp).getHours() == new Date(Date.now()).getHours()) && (new Date(lastFetch.timestamp).getDate() == new Date(Date.now()).getDate())) {
-      console.log("using cached data", (new Date(lastFetch.timestamp).getHours()), (new Date(Date.now()).getHours()), (new Date(lastFetch.timestamp).getDate()), (new Date(Date.now()).getDate()));
+    const cachedDate = new Date(lastFetch?.data?.data.current.pollution.ts || "0");
+    const now = new Date(Date.now());
+    if (lastFetch.data && (cachedDate.getDate() === now.getDate() && cachedDate.getHours() === now.getHours())) {
+      console.log('Returning cached air quality data');
       return NextResponse.json(lastFetch.data, { status: 200 });
     }
 
@@ -43,7 +74,6 @@ export async function GET() {
 
     lastFetch = {
       data,
-      timestamp: Date.now(),
     };
     
     return NextResponse.json(data, { status: 200 });

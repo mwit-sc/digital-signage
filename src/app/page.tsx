@@ -69,10 +69,9 @@ function calculatePM25(aqi: number): number | null {
              (range.pm25High - range.pm25Low) + range.pm25Low;
     }
   }
-  return null; // AQI out of range
+  return null;
 }
 
-// Dummy data with "-" placeholders
 const dummyData: ApiResponse = {
   status: "success",
   data: {
@@ -124,10 +123,8 @@ export default function Home() {
   const aqi = pollution.aqius;
   const lastUpdated = new Date(pollution.ts);
 
-  // Calculate PM2.5 from AQI
   const pm25 = calculatePM25(aqi);
 
-  // Determine AQI zone, recommendation, and background gradient
   let zone = "";
   let recommendation = "";
   let aqiBgGradient = "";
@@ -157,14 +154,6 @@ export default function Home() {
       "แจ้งเตือนสุขภาพ: ทุกคนอาจได้รับผลกระทบที่รุนแรง หลีกเลี่ยงกิจกรรมกลางแจ้งหากเป็นไปได้";
     aqiBgGradient = "bg-gradient-to-r from-purple-500/80 to-purple-700/80";
   }  
-  
-
-  // // Current time (for the header clock)
-  // const [currentTime, setCurrentTime] = useState(new Date());
-  // useEffect(() => {
-  //   const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-  //   return () => clearInterval(timer);
-  // }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -179,13 +168,13 @@ export default function Home() {
               Air Quality Report
             </p>
           </div>
-          <div
+          {/* <div
             className="text-3xl text-white drop-shadow-lg text-right"
             suppressHydrationWarning
           >
             อยู่ระหว่างการทดสอบระบบ<br></br>
             Under Development
-          </div>
+          </div> */}
         </header>
         <div className="absolute mx-auto w-full h-full my-auto inset-0 flex flex-col items-center justify-center p-12 space-y-12">
          <WeatherCard
@@ -198,7 +187,7 @@ export default function Home() {
             windDirection={weather.wd}
           />
           <div
-            className={`${aqiBgGradient} backdrop-blur-md bg-opacity-70 rounded-xl p-8 flex items-center shadow-2xl max-w-6xl w-full`}
+            className={`${aqiBgGradient} backdrop-blur-md bg-opacity-70 rounded-xl p-8 flex items-center shadow-2xl max-w-6xl w-full relative`}
           >
             <Image
               src="/face/red.svg"
@@ -235,62 +224,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-          {/* <div className="bg-gradient-to-br from-blue-500 to-blue-300 bg-opacity-90 w-max max-w-3xl rounded-3xl p-8 flex-row flex text-white shadow-xl">
-            <div className="flex-col">
-              <div className="flex items-center justify-start w-1/3">
-                <p className="text-9xl font-extrabold">
-                  {weather.tp <= 0 ? "-" : weather.tp}°
-                </p>
-              </div>
-              <div className="flex-1">
-                <h2 className="text-4xl font-bold">{city === "-" ? "-" : city}, {state === "-" ? "-" : state}</h2>
-                <p className="text-xl mt-1">{country === "-" ? "-" : country}</p>
-              </div>
-            </div>
-            <div className="border border-white/30 mx-10" />
-            <div className=" pt-4 flex-col space-y-2 text-center">
-              <div>
-                <Image
-                  src="/humidity.svg"
-                  alt="Humidity Icon"
-                  className="mx-auto w-8 h-8 mb-2"
-                  width={32}
-                  height={32}
-                />
-                <p className="text-lg">Humidity</p>
-                <p className="text-lg font-semibold">
-                  {weather.hu <= 0 ? "-" : weather.hu}%
-                </p>
-              </div>
-              <div>
-                <Image
-                  src="/pressure.svg"
-                  alt="Pressure Icon"
-                  className="mx-auto w-8 h-8 mb-2"
-                  width={32}
-                  height={32}
-                />
-                <p className="text-lg">Pressure</p>
-                <p className="text-lg font-semibold">
-                  {weather.pr <= 0 ? "-" : weather.pr} hPa
-                </p>
-              </div>
-              <div>
-                <Image
-                  src="/wind.svg"
-                  alt="Wind Icon"
-                  className="mx-auto w-8 h-8 mb-2"
-                  width={32}
-                  height={32}
-                />
-                <p className="text-lg">Wind</p>
-                <p className="text-lg font-semibold">
-                  {weather.ws <= 0 ? "-" : weather.ws} m/s
-                </p>
-              </div>
-            </div>
-          
-          </div> */}
         </div>
 
         {/* Footer */}
