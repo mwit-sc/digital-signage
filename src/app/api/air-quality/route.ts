@@ -19,6 +19,7 @@ export async function GET() {
         );
     }
     if ((new Date(lastFetch.timestamp).getHours() == new Date(Date.now()).getHours()) && (new Date(lastFetch.timestamp).getDate() == new Date(Date.now()).getDate())) {
+      console.log("using cached data", (new Date(lastFetch.timestamp).getHours()), (new Date(Date.now()).getHours()), (new Date(lastFetch.timestamp).getDate()), (new Date(Date.now()).getDate()));
       return NextResponse.json(lastFetch.data, { status: 200 });
     }
 
