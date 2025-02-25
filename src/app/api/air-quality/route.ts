@@ -18,7 +18,7 @@ export async function GET() {
             { status: 500 }
         );
     }
-    if (new Date(lastFetch.timestamp).getHours() >= new Date(Date.now()).getHours() ) {
+    if ((new Date(lastFetch.timestamp).getHours() == new Date(Date.now()).getHours()) && (new Date(lastFetch.timestamp).getDate() == new Date(Date.now()).getDate())) {
       return NextResponse.json(lastFetch.data, { status: 200 });
     }
 
@@ -29,9 +29,7 @@ export async function GET() {
     apiDest.searchParams.set('key', process.env.IQAIR_KEY);
 
     console.log('Fetching air quality data from', apiDest.toString());
-    const response = await fetch(apiDest, {
-      next: { revalidate: 900 }, // Revalidate every 15 minutes
-    });
+    const response = await fetch(apiDest);
 
     if (!response.ok) {
       return NextResponse.json(
