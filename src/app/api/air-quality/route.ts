@@ -35,8 +35,10 @@ type ApiResponse = {
 
 let lastFetch: {
   data: ApiResponse | undefined;
+  date: Date;
 } = {
   data: undefined,
+  date: new Date(0)
 };
 
 export async function GET() {
@@ -48,11 +50,13 @@ export async function GET() {
         );
     }
     const cachedDate = new Date(lastFetch?.data?.data.current.pollution.ts || "0");
+    const cachedDate2 = new Date(lastFetch?.data?.data.current.weather.ts || "0");
     const now = new Date(Date.now());
-    if (lastFetch.data && (cachedDate.getDate() === now.getDate() && cachedDate.getHours() === now.getHours())) {
+    if (lastFetch.data && ((cachedDate.getDate() === now.getDate() && cachedDate.getHours() === now.getHours()) || (cachedDate2.getDate() === now.getDate() && cachedDate2.getHours() === now.getHours()))) {
       console.log('Returning cached air quality data');
       return NextResponse.json(lastFetch.data, { status: 200 });
     }
+    console.log(cachedDate, now);
 
     const apiDest = new URL(API_URL);
     apiDest.searchParams.set('city', 'Salaya');
@@ -73,10 +77,14 @@ export async function GET() {
     const data = await response.json();
 
     lastFetch = {
-      data,
+      data: data,
+      date: new Date(Date.now())
     };
     
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json({
+      ...data,
+      lastFetch: lastFetch.date
+    }, { status: 200 });
   } catch {
     return NextResponse.json(
       { error: 'An error occurred while fetching air quality data' },
