@@ -43,7 +43,7 @@ interface AirQualityData {
 interface ApiResponse {
   status: "success" | "error";
   data: AirQualityData;
-  date?: Date;
+  lastFetch?: Date;
 }
 
 type AQIBreakpoint = {
@@ -122,7 +122,7 @@ export default function Home() {
   } = apiData.data;
 
   const aqi = pollution.aqius;
-  const lastUpdated = apiData.date ? new Date(apiData.date) : new Date(0);
+  const lastUpdated = apiData.lastFetch ? new Date(apiData.lastFetch) : new Date(0);
 
   const pm25 = calculatePM25(aqi);
 
