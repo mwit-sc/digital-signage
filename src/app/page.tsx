@@ -186,7 +186,7 @@ function CurrentDateTime() {
   });
   
   return (
-    <div className="text-right">
+    <div className="text-right" suppressHydrationWarning>
       <div className="text-3xl text-white drop-shadow-lg">{formattedDate}</div>
       <div className="text-3xl text-white drop-shadow-lg mt-1">{formattedTime} น.</div>
     </div>
@@ -321,7 +321,7 @@ export default function Home() {
       
       {/* Main content area */}
       <div className="w-full h-full flex justify-center items-center">
-        <div className="w-full max-w-7xl flex p-8 gap-8 z-10">
+        <div className="w-full max-w-7xl flex p-8 space-x-8 z-10">
           {/* Left card - AQI */}
           <div className={`w-1/2 ${aqiInfo.bgColor} rounded-3xl shadow-2xl overflow-hidden relative`}>
             
@@ -342,19 +342,19 @@ export default function Home() {
               </div>
               
               <div className="flex flex-col items-center justify-center flex-grow py-10">
-                <div className={`text-9xl font-black ${aqiInfo.textColor}`}>
+                <div className={`text-9xl font-black text-white ${aqiInfo.textColor}`}>
                   {aqi}
                 </div>
-                <div className={`text-5xl font-bold ${aqiInfo.textColor} mt-6`}>
+                <div className={`text-5xl font-bold text-white ${aqiInfo.textColor} mt-6`}>
                   {aqiInfo.level}
                 </div>
-                <div className={`text-3xl ${aqiInfo.textColor} mt-4 text-center max-w-md`}>
+                <div className={`text-3xl text-white ${aqiInfo.textColor} mt-4 text-center max-w-md`}>
                   {aqiInfo.message}
                 </div>
               </div>
               
               <div className="mt-4">
-                <div className={`${aqiInfo.textColor} text-xl font-medium border-t border-white/20 pt-4`}>
+                <div className={`${aqiInfo.textColor} text-white text-xl font-medium border-t border-white/20 pt-4`}>
                   PM 2.5: ~{pm25?.toFixed(1)} µg/m³
                 </div>
               </div>
@@ -456,7 +456,7 @@ export default function Home() {
           alt="QR Code"
           width={100}
           height={100}
-          className="w-24 h-24"
+          className="w-32 h-32"
           priority={true}
         />
       </div>
