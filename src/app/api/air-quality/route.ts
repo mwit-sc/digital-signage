@@ -70,7 +70,7 @@ export async function GET() {
     console.log('Cache expired or not found, fetching fresh air quality data');
     
     const apiDest = new URL(API_URL);
-    apiDest.searchParams.set('city', 'Nakhon-pathom');
+    apiDest.searchParams.set('city', 'Salaya');
     apiDest.searchParams.set('state', 'Nakhon-pathom');
     apiDest.searchParams.set('country', 'Thailand');
     apiDest.searchParams.set('key', process.env.IQAIR_KEY);
