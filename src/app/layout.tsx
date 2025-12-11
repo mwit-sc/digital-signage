@@ -1,15 +1,7 @@
+import React from "react";
 import type { Metadata, Viewport } from "next";
-import { IBM_Plex_Sans_Thai } from "next/font/google";
 import "./globals.css";
-
-// Optimize font loading with display:swap for better perceived performance
-const ibmPlexSansThai = IBM_Plex_Sans_Thai({
-  subsets: ["thai"],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-  variable: '--font-ibm-plex-sans-thai',
-  preload: true,
-});
+import "../polyfills";
 
 export const metadata: Metadata = {
   title: "Digital Signage | รายงานคุณภาพอากาศ",
@@ -39,9 +31,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className={ibmPlexSansThai.className}>
+    <html lang="th" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, sans-serif' }}>
       <head>
-        {/* Preload critical assets */}
+        {/* Preload critical assets and fallback font */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet" />
         <link rel="preload" href="/sky.webp" as="image" />
         <link rel="preload" href="/face/green.svg" as="image" />
         <link rel="preload" href="/face/yellow.svg" as="image" />

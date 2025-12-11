@@ -1,7 +1,7 @@
 "use client";
 
+import React, { useMemo } from "react";
 import { Wind, Droplets, Gauge, Compass } from "lucide-react";
-import { useMemo } from "react";
 
 // Helper function to convert wind direction angle to cardinal direction
 function angleToCardinal(angle: number): string {

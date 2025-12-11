@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { Wind, Droplets, Gauge, Compass, MapPin } from "lucide-react";
 import Image from "next/image";
 import useSWR from "swr";
