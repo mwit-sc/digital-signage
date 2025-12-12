@@ -256,11 +256,11 @@ body.winter-theme .winter-only {
    ======================================== */
 
 .weather-card {
-    background: rgba(59, 130, 246, 0.55) !important;
+    background: rgba(59, 130, 246, 0.7) !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
     -webkit-backdrop-filter: blur(20px) !important;
     backdrop-filter: blur(20px) !important;
-    box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.4), inset 0 0 80px rgba(96, 165, 250, 0.15) !important;
+    box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.5), inset 0 0 80px rgba(96, 165, 250, 0.2) !important;
 }
 
 /* Weather metric boxes - glassmorphism style */
@@ -448,21 +448,21 @@ body {
 }
 
 .aqi-card.aqi-loading {
-    background: rgba(107, 114, 128, 0.5) !important;
+    background: rgba(107, 114, 128, 0.65) !important;
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    box-shadow: 0 25px 50px -12px rgba(107, 114, 128, 0.4), inset 0 0 80px rgba(107, 114, 128, 0.2) !important;
+    box-shadow: 0 25px 50px -12px rgba(107, 114, 128, 0.5), inset 0 0 80px rgba(107, 114, 128, 0.25) !important;
 }
 
 .aqi-card.aqi-good {
-    background: rgba(74, 222, 128, 0.55) !important;
+    background: rgba(74, 222, 128, 0.7) !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0 25px 50px -12px rgba(34, 197, 94, 0.45), inset 0 0 80px rgba(74, 222, 128, 0.2) !important;
+    box-shadow: 0 25px 50px -12px rgba(34, 197, 94, 0.5), inset 0 0 80px rgba(74, 222, 128, 0.25) !important;
 }
 
 .aqi-card.aqi-moderate {
-    background: rgba(245, 195, 80, 0.75) !important;
+    background: rgba(245, 195, 80, 0.85) !important;
     border: 1px solid rgba(255, 255, 255, 0.35) !important;
-    box-shadow: 0 25px 50px -12px rgba(245, 175, 25, 0.5), inset 0 0 80px rgba(246, 211, 101, 0.3) !important;
+    box-shadow: 0 25px 50px -12px rgba(245, 175, 25, 0.55), inset 0 0 80px rgba(246, 211, 101, 0.35) !important;
 }
 
 /* Force white text for header elements regardless of AQI state */
@@ -508,27 +508,27 @@ header h1,
 }
 
 .aqi-card.aqi-unhealthy-sensitive {
-    background: rgba(249, 135, 50, 0.6) !important;
+    background: rgba(249, 135, 50, 0.75) !important;
     border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0 25px 50px -12px rgba(249, 115, 22, 0.5), inset 0 0 80px rgba(249, 115, 22, 0.2) !important;
+    box-shadow: 0 25px 50px -12px rgba(249, 115, 22, 0.55), inset 0 0 80px rgba(249, 115, 22, 0.25) !important;
 }
 
 .aqi-card.aqi-unhealthy {
-    background: rgba(239, 90, 90, 0.6) !important;
+    background: rgba(239, 90, 90, 0.75) !important;
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    box-shadow: 0 25px 50px -12px rgba(239, 68, 68, 0.5), inset 0 0 80px rgba(239, 68, 68, 0.2) !important;
+    box-shadow: 0 25px 50px -12px rgba(239, 68, 68, 0.55), inset 0 0 80px rgba(239, 68, 68, 0.25) !important;
 }
 
 .aqi-card.aqi-very-unhealthy {
-    background: rgba(159, 112, 255, 0.6) !important;
+    background: rgba(159, 112, 255, 0.75) !important;
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.5), inset 0 0 80px rgba(139, 92, 246, 0.2) !important;
+    box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.55), inset 0 0 80px rgba(139, 92, 246, 0.25) !important;
 }
 
 .aqi-card.aqi-hazardous {
-    background: rgba(146, 54, 226, 0.65) !important;
+    background: rgba(146, 54, 226, 0.8) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    box-shadow: 0 25px 50px -12px rgba(126, 34, 206, 0.55), inset 0 0 80px rgba(126, 34, 206, 0.25) !important;
+    box-shadow: 0 25px 50px -12px rgba(126, 34, 206, 0.6), inset 0 0 80px rgba(126, 34, 206, 0.3) !important;
 }
 
 /* Performance optimizations for older browsers */
