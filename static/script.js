@@ -105,6 +105,42 @@
     // Store last temperature for suggestion updates
     var lastTemperature = 28;
 
+    // ========================================
+    // TWEMOJI HELPER
+    // ========================================
+
+    // Helper function to convert emoji to Twemoji images
+    function parseEmoji(element) {
+        if (typeof twemoji !== 'undefined' && element) {
+            twemoji.parse(element, {
+                folder: 'svg',
+                ext: '.svg'
+            });
+        }
+    }
+
+    // Weather icon mapping (IQAir icon codes to emoji)
+    var weatherIcons = {
+        '01d': '☀️',  // clear sky day
+        '01n': '🌙',  // clear sky night
+        '02d': '⛅',  // few clouds day
+        '02n': '☁️',  // few clouds night
+        '03d': '☁️',  // scattered clouds
+        '03n': '☁️',
+        '04d': '☁️',  // broken clouds
+        '04n': '☁️',
+        '09d': '🌧️', // shower rain
+        '09n': '🌧️',
+        '10d': '🌦️', // rain day
+        '10n': '🌧️', // rain night
+        '11d': '⛈️', // thunderstorm
+        '11n': '⛈️',
+        '13d': '❄️', // snow
+        '13n': '❄️',
+        '50d': '🌫️', // mist
+        '50n': '🌫️'
+    };
+
     // AQI breakpoints for PM2.5 calculation
     var aqiBreakpoints = [
         { aqiLow: 0, aqiHigh: 50, pm25Low: 0.0, pm25High: 12.0 },
@@ -227,13 +263,14 @@
         var aqiInfo = getAQIInfo(aqi);
         var pm25 = calculatePM25(aqi);
 
-        // Update AQI card styling
-        aqiCard.className = 'w-1/2 glass-card bg-gradient-to-br rounded-3xl shadow-2xl overflow-hidden relative aqi-card ' + aqiInfo.bgClass;
+        // Update AQI card styling (glassmorphism with colored tint)
+        aqiCard.className = 'w-1/2 glass-card rounded-3xl shadow-2xl overflow-hidden relative aqi-card ' + aqiInfo.bgClass;
 
         // Update values
         aqiValue.textContent = aqi;
         aqiLevel.textContent = aqiInfo.level;
         aqiEmoji.textContent = aqiInfo.emoji;
+        parseEmoji(aqiEmoji);
 
         // Update dynamic suggestion based on AQI and temperature
         if (aqiSuggestion) {
@@ -261,6 +298,7 @@
         var pressureValue = document.getElementById('pressure-value');
         var windDirectionValue = document.getElementById('wind-direction-value');
         var windCardinalValue = document.getElementById('wind-cardinal-value');
+        var weatherIcon = document.getElementById('weather-icon');
 
         if (!data || !data.current || !data.current.weather) {
             return;
@@ -328,6 +366,13 @@
         pressureValue.textContent = pressure + ' hPa';
         windDirectionValue.textContent = windDirection + '°';
         windCardinalValue.textContent = '(' + windCardinal + ')';
+
+        // Update weather icon
+        if (weatherIcon) {
+            var iconCode = weather.ic || '01d';
+            weatherIcon.textContent = weatherIcons[iconCode] || '☀️';
+            parseEmoji(weatherIcon);
+        }
     }
 
     // Update footer with last updated time
