@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0ea5e9">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Digital Signage">
+    <meta name="application-name" content="MWIT Digital Signage">
+
+    <title>Digital Signage | รายงานคุณภาพอากาศ</title>
+    <meta name="description" content="ระบบแสดงคุณภาพอากาศสำหรับ MWIT Digital Signage System">
+    <meta name="author" content="Student Committee">
+
+    <!-- Google Fonts for Thai language support -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS via CDN with compatibility for Chrome 49 -->
+    <link href="https://unpkg.com/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="w-screen h-screen overflow-hidden relative">
+
+        <!-- Beautiful gradient background with sky overlay -->
+        <div class="fixed inset-0 z-0">
+            <img
+                src="assets/sky.webp"
+                alt="Sky Background"
+                class="w-full h-full object-cover object-center"
+            />
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-transparent to-purple-900/20"></div>
+            <div class="absolute inset-0 bg-black/20"></div>
+        </div>
+
+        <!-- Elegant header with perfect spacing for 4K -->
+        <header class="absolute top-0 left-0 right-0 p-10 flex justify-between items-start z-20">
+            <div>
+                <h1 class="text-5xl font-bold text-white drop-shadow-2xl leading-tight">
+                    รายงานคุณภาพอากาศ
+                </h1>
+                <p class="text-2xl font-medium text-white/90 drop-shadow-lg mt-2">
+                    Air Quality Report • MWIT
+                </p>
+            </div>
+            <div class="text-right" id="current-datetime">
+                <div class="text-3xl font-semibold text-white drop-shadow-xl opacity-95" id="date-display">
+                    กำลังโหลด...
+                </div>
+                <div class="text-4xl font-bold text-white drop-shadow-xl mt-1" id="time-display">
+                    กำลังโหลด...
+                </div>
+            </div>
+        </header>
+
+        <!-- Main content - optimized layout for 4K 55" viewing -->
+        <div class="w-full h-full flex justify-center items-center pt-32 pb-40">
+            <div class="w-full max-w-7xl flex p-8 space-x-12 z-10">
+
+                <!-- AQI Card - Beautiful yet highly visible -->
+                <div class="w-1/2 bg-gradient-to-br from-gray-500 to-gray-600 rounded-3xl shadow-2xl shadow-gray-500/50 overflow-hidden relative" id="aqi-card">
+
+                    <!-- Subtle pattern overlay -->
+                    <div class="absolute inset-0 opacity-20">
+                        <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/30 via-transparent to-black/10"></div>
+                    </div>
+
+                    <div class="p-10 flex flex-col h-full justify-between relative z-10">
+
+                        <!-- Header section -->
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-xl font-bold tracking-wide text-white/90">คุณภาพอากาศ</div>
+                                <div class="text-3xl font-black text-white">US AQI</div>
+                            </div>
+                            <div class="text-6xl filter drop-shadow-lg" id="aqi-emoji">⏳</div>
+                        </div>
+
+                        <!-- Main AQI display - perfectly sized for distance viewing -->
+                        <div class="flex flex-col items-center justify-center flex-grow py-8">
+                            <div class="text-10xl font-black leading-none text-white drop-shadow-2xl tracking-tight" id="aqi-value">
+                                0
+                            </div>
+                            <div class="text-4xl font-bold text-white mt-4 text-center tracking-wide" id="aqi-level">
+                                กำลังโหลด
+                            </div>
+                            <div class="text-xl font-semibold text-white mt-4 text-center max-w-md leading-relaxed opacity-95" id="aqi-message">
+                                กรุณารอสักครู่
+                            </div>
+                        </div>
+
+                        <!-- Footer info -->
+                        <div class="border-t border-white/20 pt-6 space-y-2">
+                            <div class="text-white text-2xl font-bold" id="pm25-info">
+                                PM 2.5: กำลังโหลด...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather Card - Clean and beautiful -->
+                <div class="w-1/2 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 rounded-3xl shadow-2xl shadow-blue-500/30 overflow-hidden relative">
+
+                    <!-- Elegant background pattern -->
+                    <div class="absolute inset-0 opacity-20">
+                        <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-white/30 via-transparent to-black/10"></div>
+                    </div>
+
+                    <div class="p-10 flex flex-col h-full justify-between relative z-10">
+
+                        <!-- Header -->
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="text-xl font-bold text-white/90 tracking-wide">สภาพอากาศ</div>
+                                <div class="text-3xl font-black text-white" id="weather-location">กำลังโหลด...</div>
+                            </div>
+                            <div class="flex items-center">
+                                <img class="w-6 h-6 text-white mr-2" src="assets/icons/map-pin.svg" alt="Location">
+                                <div class="text-xl font-semibold text-white">
+                                    Salaya
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Temperature display -->
+                        <div class="flex flex-col items-center justify-center flex-grow py-6">
+                            <div class="text-8xl font-black text-white leading-none drop-shadow-2xl tracking-tight" id="temperature-value">
+                                0°C
+                            </div>
+                            <div class="text-2xl font-semibold text-white/95 mt-4" id="feels-like">
+                                รู้สึกเหมือน 0°C
+                            </div>
+                        </div>
+
+                        <!-- Weather details grid -->
+                        <div class="grid grid-cols-2 gap-4 mt-6">
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-white border border-white/20">
+                                <div class="flex items-center mb-2">
+                                    <img class="w-5 h-5 mr-2" src="assets/icons/droplets.svg" alt="Humidity">
+                                    <span class="text-lg font-semibold">ความชื้น</span>
+                                </div>
+                                <div class="text-3xl font-bold" id="humidity-value">0%</div>
+                            </div>
+
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-white border border-white/20">
+                                <div class="flex items-center mb-2">
+                                    <img class="w-5 h-5 mr-2" src="assets/icons/wind.svg" alt="Wind">
+                                    <span class="text-lg font-semibold">ความเร็วลม</span>
+                                </div>
+                                <div class="text-3xl font-bold" id="wind-speed-value">0 กม./ชม.</div>
+                            </div>
+
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-white border border-white/20">
+                                <div class="flex items-center mb-2">
+                                    <img class="w-5 h-5 mr-2" src="assets/icons/gauge.svg" alt="Pressure">
+                                    <span class="text-lg font-semibold">ความดัน</span>
+                                </div>
+                                <div class="text-3xl font-bold" id="pressure-value">0 hPa</div>
+                            </div>
+
+                            <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-white border border-white/20">
+                                <div class="flex items-center mb-2">
+                                    <img class="w-5 h-5 mr-2" src="assets/icons/compass.svg" alt="Wind Direction">
+                                    <span class="text-lg font-semibold">ทิศทางลม</span>
+                                </div>
+                                <div class="text-2xl font-bold" id="wind-direction-value">0°</div>
+                                <div class="text-lg font-medium opacity-90" id="wind-cardinal-value">(เหนือ)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beautiful footer -->
+        <footer class="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-md text-white p-6 flex justify-between items-center z-20 border-t border-white/20">
+            <div class="flex items-center">
+                <img
+                    src="assets/sc.png"
+                    alt="SC Logo"
+                    class="h-12 w-auto mr-4"
+                />
+                <div class="text-base">
+                    <p class="font-semibold">ขับเคลื่อนโดยคณะกรรมการสภานักเรียนรุ่นที่ 33</p>
+                    <p class="font-normal opacity-90">Developed by 33rd Student Committee</p>
+                </div>
+            </div>
+
+            <div class="text-right text-base">
+                <div class="font-semibold" id="last-updated">
+                    อัพเดทล่าสุด: กำลังโหลด...
+                </div>
+                <div class="flex items-center justify-end mt-1 space-x-4">
+                    <span class="text-yellow-300 font-medium hidden" id="cache-indicator">(แคชข้อมูล)</span>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Elegant QR Code -->
+        <div class="absolute bottom-28 right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-xl z-20 border border-white/20">
+            <img
+                src="assets/air-quality-qr.png"
+                alt="QR Code"
+                class="w-28 h-28"
+            />
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
