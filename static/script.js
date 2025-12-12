@@ -4,6 +4,107 @@
 (function() {
     'use strict';
 
+    // ========================================
+    // SEASONAL THEME DETECTION
+    // ========================================
+
+    // Check if current month is winter season (December, January, February)
+    function isWinterSeason() {
+        var month = new Date().getMonth(); // 0-indexed: 0 = January
+        return month === 11 || month === 0 || month === 1; // Dec, Jan, Feb
+    }
+
+    // Apply seasonal theme based on current month
+    function applySeasonalTheme() {
+        var body = document.body;
+        var decorations = document.getElementById('seasonal-decorations');
+
+        if (isWinterSeason()) {
+            body.classList.add('winter-theme');
+            if (decorations) {
+                decorations.classList.remove('hidden');
+            }
+            createSnowflakes();
+        } else {
+            body.classList.remove('winter-theme');
+            if (decorations) {
+                decorations.classList.add('hidden');
+            }
+        }
+    }
+
+    // Create falling snowflake particles
+    function createSnowflakes() {
+        var container = document.getElementById('snowflakes-container');
+        if (!container) return;
+
+        // Clear existing snowflakes
+        container.innerHTML = '';
+
+        var snowflakeCount = 50;
+        var snowflakeChars = ['❄', '❅', '❆', '✻', '✼'];
+
+        for (var i = 0; i < snowflakeCount; i++) {
+            var snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+
+            // Randomize size class
+            var sizeRand = Math.random();
+            if (sizeRand < 0.3) {
+                snowflake.className += ' small';
+            } else if (sizeRand > 0.8) {
+                snowflake.className += ' large';
+            }
+
+            // Random position and timing
+            snowflake.style.left = Math.random() * 100 + '%';
+            snowflake.style.animationDuration = (Math.random() * 15 + 10) + 's';
+            snowflake.style.animationDelay = Math.random() * 15 + 's';
+            snowflake.style.opacity = Math.random() * 0.5 + 0.3;
+
+            // Random snowflake character
+            snowflake.textContent = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)];
+
+            container.appendChild(snowflake);
+        }
+    }
+
+    // ========================================
+    // DYNAMIC SUGGESTIONS
+    // ========================================
+
+    // Get dynamic health suggestion based on AQI and temperature
+    function getDynamicSuggestion(aqi, temperature) {
+        // Temperature-based warnings take priority
+        if (temperature >= 38) {
+            return 'อากาศร้อนมาก ดื่มน้ำบ่อยๆ หลีกเลี่ยงแดดจัด';
+        }
+        if (temperature <= 15) {
+            return 'อากาศเย็น สวมเสื้อกันหนาว ระวังสุขภาพ';
+        }
+
+        // AQI-based suggestions
+        if (aqi <= 0) {
+            return 'กรุณารอสักครู่...';
+        }
+        if (aqi <= 50) {
+            return 'วันนี้อากาศดี เหมาะออกกำลังกายกลางแจ้ง';
+        }
+        if (aqi <= 100) {
+            return 'แนะนำ: สวมหน้ากากอนามัยเมื่ออยู่นอกอาคาร เพื่อสุขภาพที่ดีในช่วงฤดูหนาว';
+        }
+        if (aqi <= 150) {
+            return 'กลุ่มเสี่ยงควรลดกิจกรรมกลางแจ้ง สวมหน้ากาก N95';
+        }
+        if (aqi <= 200) {
+            return 'ทุกคนควรลดกิจกรรมกลางแจ้ง ใช้เครื่องฟอกอากาศในอาคาร';
+        }
+        return 'อยู่ในอาคาร ปิดหน้าต่าง ใช้เครื่องกรองอากาศ';
+    }
+
+    // Store last temperature for suggestion updates
+    var lastTemperature = 28;
+
     // AQI breakpoints for PM2.5 calculation
     var aqiBreakpoints = [
         { aqiLow: 0, aqiHigh: 50, pm25Low: 0.0, pm25High: 12.0 },
@@ -114,9 +215,9 @@
         var aqiCard = document.getElementById('aqi-card');
         var aqiValue = document.getElementById('aqi-value');
         var aqiLevel = document.getElementById('aqi-level');
-        var aqiMessage = document.getElementById('aqi-message');
         var aqiEmoji = document.getElementById('aqi-emoji');
         var pm25Info = document.getElementById('pm25-info');
+        var aqiSuggestion = document.getElementById('aqi-suggestion');
 
         if (!data || !data.current || !data.current.pollution) {
             return;
@@ -127,13 +228,17 @@
         var pm25 = calculatePM25(aqi);
 
         // Update AQI card styling
-        aqiCard.className = 'w-1/2 bg-gradient-to-br rounded-3xl shadow-2xl overflow-hidden relative aqi-card ' + aqiInfo.bgClass;
+        aqiCard.className = 'w-1/2 glass-card bg-gradient-to-br rounded-3xl shadow-2xl overflow-hidden relative aqi-card ' + aqiInfo.bgClass;
 
         // Update values
         aqiValue.textContent = aqi;
         aqiLevel.textContent = aqiInfo.level;
-        aqiMessage.textContent = aqiInfo.message;
         aqiEmoji.textContent = aqiInfo.emoji;
+
+        // Update dynamic suggestion based on AQI and temperature
+        if (aqiSuggestion) {
+            aqiSuggestion.textContent = getDynamicSuggestion(aqi, lastTemperature);
+        }
 
         if (pm25 !== null) {
             pm25Info.textContent = 'PM 2.5: ~' + pm25.toFixed(1) + ' µg/m³';
@@ -177,6 +282,9 @@
         } else {
             temperature = Math.round(temperature * 10) / 10;
         }
+
+        // Store temperature for dynamic suggestions
+        lastTemperature = temperature;
 
         // Calculate feels like temperature
         var humidity = 65; // default value
@@ -386,6 +494,9 @@
     function init() {
         //console.log('Initializing ...');
 
+        // Apply seasonal theme (winter decorations in Dec-Feb)
+        applySeasonalTheme();
+
         // Initial time sync
         syncTime();
 
@@ -401,6 +512,9 @@
         setInterval(function() {
             fetchAirQualityData();
         }, 5 * 60 * 1000);
+
+        // Check for seasonal theme change daily (in case page is open across months)
+        setInterval(applySeasonalTheme, 24 * 60 * 60 * 1000);
 
         // console.log('initialized successfully');
     }

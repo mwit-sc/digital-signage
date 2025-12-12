@@ -1,5 +1,276 @@
 /* Additional custom styles for Chrome 49 compatibility */
 
+/* ========================================
+   SEASONAL THEME SYSTEM
+   ======================================== */
+
+/* CSS Variables for theming */
+:root {
+    --bg-overlay-color: rgba(0, 0, 0, 0.2);
+    --frost-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Winter theme overrides */
+body.winter-theme {
+    --bg-overlay-color: rgba(10, 25, 47, 0.4);
+    --frost-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ========================================
+   GLASSMORPHISM CARDS
+   ======================================== */
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Chrome 49+ backdrop-filter support */
+@supports (-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px)) {
+    .glass-card {
+        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(20px);
+        background: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Fallback for browsers without backdrop-filter */
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+    .glass-card {
+        background: rgba(30, 41, 59, 0.85);
+    }
+}
+
+/* Glass card inner glow effect */
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    pointer-events: none;
+}
+
+/* ========================================
+   SNOWFLAKE ANIMATIONS
+   ======================================== */
+
+#snowflakes-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 15;
+    overflow: hidden;
+}
+
+.snowflake {
+    position: absolute;
+    top: -20px;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    -webkit-animation: snowfall linear infinite;
+    animation: snowfall linear infinite;
+    pointer-events: none;
+}
+
+.snowflake.large {
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.snowflake.small {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+@-webkit-keyframes snowfall {
+    0% {
+        -webkit-transform: translateY(-10px) rotate(0deg) translateX(0);
+        transform: translateY(-10px) rotate(0deg) translateX(0);
+        opacity: 1;
+    }
+    50% {
+        -webkit-transform: translateY(50vh) rotate(180deg) translateX(20px);
+        transform: translateY(50vh) rotate(180deg) translateX(20px);
+    }
+    100% {
+        -webkit-transform: translateY(100vh) rotate(360deg) translateX(-20px);
+        transform: translateY(100vh) rotate(360deg) translateX(-20px);
+        opacity: 0.3;
+    }
+}
+
+@keyframes snowfall {
+    0% {
+        -webkit-transform: translateY(-10px) rotate(0deg) translateX(0);
+        transform: translateY(-10px) rotate(0deg) translateX(0);
+        opacity: 1;
+    }
+    50% {
+        -webkit-transform: translateY(50vh) rotate(180deg) translateX(20px);
+        transform: translateY(50vh) rotate(180deg) translateX(20px);
+    }
+    100% {
+        -webkit-transform: translateY(100vh) rotate(360deg) translateX(-20px);
+        transform: translateY(100vh) rotate(360deg) translateX(-20px);
+        opacity: 0.3;
+    }
+}
+
+/* ========================================
+   FROST DECORATIONS
+   ======================================== */
+
+.frost-decoration {
+    position: fixed;
+    pointer-events: none;
+    z-index: 18;
+}
+
+.frost-top-left {
+    top: 0;
+    left: 0;
+    width: 400px;
+    height: 300px;
+    background:
+        radial-gradient(ellipse at top left, rgba(255, 255, 255, 0.15) 0%, transparent 70%),
+        linear-gradient(135deg, rgba(173, 216, 230, 0.2) 0%, transparent 50%);
+}
+
+.frost-top-right {
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 300px;
+    background:
+        radial-gradient(ellipse at top right, rgba(255, 255, 255, 0.15) 0%, transparent 70%),
+        linear-gradient(225deg, rgba(173, 216, 230, 0.2) 0%, transparent 50%);
+}
+
+.frost-bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.05), transparent);
+}
+
+/* Static snowflake icons on cards */
+.card-snowflake {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.15);
+    pointer-events: none;
+    font-size: 2rem;
+}
+
+/* Winter-only elements hidden by default */
+.winter-only {
+    display: none;
+}
+
+body.winter-theme .winter-only {
+    display: block;
+}
+
+/* ========================================
+   SUGGESTION BOX
+   ======================================== */
+
+.suggestion-box {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: start;
+    -webkit-align-items: flex-start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 16px;
+}
+
+.suggestion-box img {
+    width: 24px;
+    height: 24px;
+    -webkit-flex-shrink: 0;
+    flex-shrink: 0;
+    margin-top: 2px;
+    /* Invert to white for visibility on colored backgrounds */
+    filter: brightness(0) saturate(100%) invert(1);
+    -webkit-filter: brightness(0) saturate(100%) invert(1);
+}
+
+.suggestion-box span {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+/* ========================================
+   QR CODE CONTAINER
+   ======================================== */
+
+.qr-container {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.qr-container img {
+    width: 112px;
+    height: 112px;
+}
+
+.qr-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+    max-width: 120px;
+}
+
+/* ========================================
+   WINTER BACKGROUND
+   ======================================== */
+
+body.winter-theme .winter-bg-overlay {
+    display: block;
+}
+
+.winter-bg-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg,
+        rgba(15, 23, 42, 0.3) 0%,
+        rgba(30, 41, 59, 0.2) 50%,
+        rgba(15, 23, 42, 0.4) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
 /* Font family fallbacks */
 body {
     font-family: 'IBM Plex Sans Thai', 'Noto Sans Thai', Arial, sans-serif;
@@ -117,8 +388,8 @@ body {
 }
 
 .aqi-card.aqi-moderate {
-    background: linear-gradient(to bottom right, rgb(250, 204, 21), rgb(234, 179, 8)) !important;
-    box-shadow: 0 25px 50px -12px rgba(234, 179, 8, 0.5) !important;
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 50%, #f5af19 100%) !important;
+    box-shadow: 0 25px 50px -12px rgba(245, 175, 25, 0.5) !important;
 }
 
 /* Force white text for header elements regardless of AQI state */
@@ -144,11 +415,23 @@ header h1,
 /* Only target specific AQI elements for black text during moderate conditions */
 .aqi-card.aqi-moderate #aqi-value,
 .aqi-card.aqi-moderate #aqi-level,
-.aqi-card.aqi-moderate #aqi-message,
+.aqi-card.aqi-moderate #aqi-suggestion,
 .aqi-card.aqi-moderate #pm25-info,
 .aqi-card.aqi-moderate .text-xl.font-bold.tracking-wide,
 .aqi-card.aqi-moderate .text-3xl.font-black {
     color: rgb(0, 0, 0) !important;
+}
+
+/* Make suggestion box icon dark when AQI is moderate */
+.aqi-card.aqi-moderate .suggestion-box img {
+    filter: brightness(0) saturate(100%) !important;
+    -webkit-filter: brightness(0) saturate(100%) !important;
+}
+
+/* Make suggestion box border darker for moderate AQI */
+.aqi-card.aqi-moderate .suggestion-box {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
 }
 
 .aqi-card.aqi-unhealthy-sensitive {

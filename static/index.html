@@ -31,9 +31,24 @@
                 src="assets/sky.webp"
                 alt="Sky Background"
                 class="w-full h-full object-cover object-center"
+                id="bg-image"
             />
             <div class="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-transparent to-purple-900/20"></div>
             <div class="absolute inset-0 bg-black/20"></div>
+        </div>
+
+        <!-- Winter background overlay (hidden by default) -->
+        <div class="winter-bg-overlay"></div>
+
+        <!-- Seasonal decorations container (hidden by default) -->
+        <div id="seasonal-decorations" class="hidden">
+            <!-- Frost decorations at corners -->
+            <div class="frost-decoration frost-top-left"></div>
+            <div class="frost-decoration frost-top-right"></div>
+            <div class="frost-decoration frost-bottom"></div>
+
+            <!-- Snowflakes container - populated by JS -->
+            <div id="snowflakes-container"></div>
         </div>
 
         <!-- Elegant header with perfect spacing for 4K -->
@@ -60,13 +75,18 @@
         <div class="w-full h-full flex justify-center items-center pt-32 pb-40">
             <div class="w-full max-w-7xl flex p-8 space-x-12 z-10">
 
-                <!-- AQI Card - Beautiful yet highly visible -->
-                <div class="w-1/2 bg-gradient-to-br from-gray-500 to-gray-600 rounded-3xl shadow-2xl shadow-gray-500/50 overflow-hidden relative" id="aqi-card">
+                <!-- AQI Card - Glassmorphism design -->
+                <div class="w-1/2 glass-card bg-gradient-to-br from-gray-500 to-gray-600 rounded-3xl shadow-2xl shadow-gray-500/50 overflow-hidden relative" id="aqi-card">
 
                     <!-- Subtle pattern overlay -->
                     <div class="absolute inset-0 opacity-20">
                         <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/30 via-transparent to-black/10"></div>
                     </div>
+
+                    <!-- Decorative snowflakes (visible only in winter) -->
+                    <span class="card-snowflake winter-only" style="top: 10%; right: 15%;">❄</span>
+                    <span class="card-snowflake winter-only" style="bottom: 20%; left: 10%;">❄</span>
+                    <span class="card-snowflake winter-only" style="bottom: 40%; right: 5%;">❄</span>
 
                     <div class="p-10 flex flex-col h-full justify-between relative z-10">
 
@@ -87,13 +107,16 @@
                             <div class="text-4xl font-bold text-white mt-4 text-center tracking-wide" id="aqi-level">
                                 กำลังโหลด
                             </div>
-                            <div class="text-xl font-semibold text-white mt-4 text-center max-w-md leading-relaxed opacity-95" id="aqi-message">
-                                กรุณารอสักครู่
-                            </div>
+                        </div>
+
+                        <!-- Suggestion box with mask icon -->
+                        <div class="suggestion-box text-white">
+                            <img src="assets/icons/mask.svg" alt="mask" class="w-6 h-6">
+                            <span id="aqi-suggestion">กรุณารอสักครู่</span>
                         </div>
 
                         <!-- Footer info -->
-                        <div class="border-t border-white/20 pt-6 space-y-2">
+                        <div class="border-t border-white/20 pt-6 mt-4 space-y-2">
                             <div class="text-white text-2xl font-bold" id="pm25-info">
                                 PM 2.5: กำลังโหลด...
                             </div>
@@ -101,13 +124,18 @@
                     </div>
                 </div>
 
-                <!-- Weather Card - Clean and beautiful -->
-                <div class="w-1/2 bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 rounded-3xl shadow-2xl shadow-blue-500/30 overflow-hidden relative">
+                <!-- Weather Card - Glassmorphism design -->
+                <div class="w-1/2 glass-card bg-gradient-to-br from-blue-500/80 via-blue-600/70 to-blue-700/80 rounded-3xl shadow-2xl shadow-blue-500/30 overflow-hidden relative" id="weather-card">
 
                     <!-- Elegant background pattern -->
                     <div class="absolute inset-0 opacity-20">
                         <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-bl from-white/30 via-transparent to-black/10"></div>
                     </div>
+
+                    <!-- Decorative snowflakes (visible only in winter) -->
+                    <span class="card-snowflake winter-only" style="top: 15%; left: 10%;">❄</span>
+                    <span class="card-snowflake winter-only" style="top: 50%; right: 8%;">❄</span>
+                    <span class="card-snowflake winter-only" style="bottom: 15%; left: 20%;">❄</span>
 
                     <div class="p-10 flex flex-col h-full justify-between relative z-10">
 
@@ -199,13 +227,13 @@
             </div>
         </footer>
 
-        <!-- Elegant QR Code -->
-        <div class="absolute bottom-28 right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-xl z-20 border border-white/20">
+        <!-- Elegant QR Code with description -->
+        <div class="absolute bottom-28 right-8 qr-container bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-xl z-20 border border-white/20">
             <img
                 src="assets/air-quality-qr.png"
                 alt="QR Code"
-                class="w-28 h-28"
             />
+            <span class="qr-label text-gray-700 font-medium">(ดูข้อมูล)</span>
         </div>
     </div>
 
