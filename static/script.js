@@ -439,13 +439,13 @@
         xhr.send();
     }
 
-    // Dummy data
+    // Fallback data - matches default display values
     function loadFallbackData() {
-        var dummyData = {
+        var fallbackData = {
             status: 'success',
             data: {
-                city: 'Salaya',
-                state: 'Nakhon Pathom',
+                city: 'กำลังโหลด',
+                state: '',
                 country: 'Thailand',
                 location: {
                     type: 'Point',
@@ -454,18 +454,18 @@
                 current: {
                     pollution: {
                         ts: new Date().toISOString(),
-                        aqius: 85,
+                        aqius: 0,
                         mainus: 'p2',
-                        aqicn: 85,
+                        aqicn: 0,
                         maincn: 'p2'
                     },
                     weather: {
                         ts: new Date().toISOString(),
-                        tp: 28,
-                        pr: 1013,
-                        hu: 65,
-                        ws: 3.2,
-                        wd: 180,
+                        tp: 0,
+                        pr: 0,
+                        hu: 0,
+                        ws: 0,
+                        wd: 0,
                         ic: '01d'
                     }
                 }
@@ -474,9 +474,9 @@
             lastFetch: new Date()
         };
 
-        updateAQICard(dummyData.data);
-        updateWeatherCard(dummyData.data);
-        updateFooter(dummyData);
+        updateAQICard(fallbackData.data);
+        updateWeatherCard(fallbackData.data);
+        updateFooter(fallbackData);
         isLoading = false;
     }
 
