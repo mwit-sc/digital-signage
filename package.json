@@ -11,12 +11,7 @@
     "deploy": "opennextjs-cloudflare && wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts"
   },
-  "browserslist": [
-    "defaults",
-    "not IE 11",
-    "chrome 49",
-    "safari 10"
-  ],
+  "browserslist": ["chrome >= 94", "not dead"],
   "dependencies": {
     "lucide-react": "^0.511.0",
     "next": "^15.5.7",
