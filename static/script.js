@@ -119,27 +119,40 @@
         }
     }
 
-    // Weather icon mapping (IQAir icon codes to emoji)
-    var weatherIcons = {
-        '01d': '☀️',  // clear sky day
-        '01n': '🌙',  // clear sky night
-        '02d': '⛅',  // few clouds day
-        '02n': '☁️',  // few clouds night
-        '03d': '☁️',  // scattered clouds
-        '03n': '☁️',
-        '04d': '☁️',  // broken clouds
-        '04n': '☁️',
-        '09d': '🌧️', // shower rain
-        '09n': '🌧️',
-        '10d': '🌦️', // rain day
-        '10n': '🌧️', // rain night
-        '11d': '⛈️', // thunderstorm
-        '11n': '⛈️',
-        '13d': '❄️', // snow
-        '13n': '❄️',
-        '50d': '🌫️', // mist
-        '50n': '🌫️'
+    // WMO Weather codes to emoji mapping (Open-Meteo)
+    var weatherCodes = {
+        0: '☀️',      // Clear sky
+        1: '🌤️',      // Mainly clear
+        2: '⛅',      // Partly cloudy
+        3: '☁️',      // Overcast
+        45: '🌫️',     // Fog
+        48: '🌫️',     // Depositing rime fog
+        51: '🌧️',     // Light drizzle
+        53: '🌧️',     // Moderate drizzle
+        55: '🌧️',     // Dense drizzle
+        56: '🌧️',     // Light freezing drizzle
+        57: '🌧️',     // Dense freezing drizzle
+        61: '🌧️',     // Slight rain
+        63: '🌧️',     // Moderate rain
+        65: '🌧️',     // Heavy rain
+        66: '🌧️',     // Light freezing rain
+        67: '🌧️',     // Heavy freezing rain
+        71: '❄️',     // Slight snow
+        73: '❄️',     // Moderate snow
+        75: '❄️',     // Heavy snow
+        77: '❄️',     // Snow grains
+        80: '🌦️',     // Slight rain showers
+        81: '🌦️',     // Moderate rain showers
+        82: '⛈️',     // Violent rain showers
+        85: '🌨️',     // Slight snow showers
+        86: '🌨️',     // Heavy snow showers
+        95: '⛈️',     // Thunderstorm
+        96: '⛈️',     // Thunderstorm with slight hail
+        99: '⛈️'      // Thunderstorm with heavy hail
     };
+
+    // Rain-related weather codes
+    var rainCodes = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99];
 
     // AQI breakpoints for PM2.5 calculation
     var aqiBreakpoints = [
@@ -288,91 +301,200 @@
         }
     }
 
-    // Update weather card with new data
+    // Get weather alert based on current conditions
+    function getWeatherAlert(weatherCode, precipitation, hourlyPrecip, hourlyTime, temperature) {
+        // Currently raining
+        if (precipitation > 0 || rainCodes.indexOf(weatherCode) !== -1) {
+            return { show: true, text: 'ฝนกำลังตก อย่าลืมดูแลตัวเองด้วยนะ!', icon: '🌧️', type: 'rain' };
+        }
+
+        // Rain expected in next few hours
+        if (hourlyPrecip && hourlyPrecip.length > 0) {
+            for (var i = 0; i < hourlyPrecip.length; i++) {
+                if (hourlyPrecip[i] > 0.1) {
+                    var rainTime = new Date(hourlyTime[i]);
+                    var hours = rainTime.getHours();
+                    var timeStr = (hours < 10 ? '0' : '') + hours + ':00 น.';
+                    return { show: true, text: 'ฝนอาจตกตอน ' + timeStr, icon: '🌧️', type: 'rain' };
+                }
+            }
+        }
+
+        // Hot weather warning
+        if (temperature >= 38) {
+            return { show: true, text: 'อากาศร้อนมาก ดื่มน้ำเยอะๆ นะ!', icon: '🥵', type: 'heat' };
+        }
+
+        // Thunderstorm warning
+        if ([95, 96, 99].indexOf(weatherCode) !== -1) {
+            return { show: true, text: 'มีพายุฝนฟ้าคะนอง ระวังอันตราย!', icon: '⛈️', type: 'storm' };
+        }
+
+        return { show: false };
+    }
+
+    // Update weather card with Open-Meteo data
     function updateWeatherCard(data) {
         var weatherLocation = document.getElementById('weather-location');
         var temperatureValue = document.getElementById('temperature-value');
-        var feelsLike = document.getElementById('feels-like');
+        var tempRange = document.getElementById('temp-range');
         var humidityValue = document.getElementById('humidity-value');
-        var windSpeedValue = document.getElementById('wind-speed-value');
-        var pressureValue = document.getElementById('pressure-value');
-        var windDirectionValue = document.getElementById('wind-direction-value');
-        var windCardinalValue = document.getElementById('wind-cardinal-value');
+        var precipForecast = document.getElementById('precip-forecast');
+        var precipIcon = document.getElementById('precip-icon');
+        var windInfo = document.getElementById('wind-info');
         var weatherIcon = document.getElementById('weather-icon');
+        var weatherAlert = document.getElementById('weather-alert');
+        var alertIcon = document.getElementById('alert-icon');
+        var alertText = document.getElementById('alert-text');
 
-        if (!data || !data.current || !data.current.weather) {
+        if (!data || !data.current) {
             return;
         }
 
-        var weather = data.current.weather;
-        var city = data.city || 'กำลังโหลด';
-        var state = data.state || '';
+        var current = data.current;
+        var daily = data.daily || {};
+        var hourly = data.hourly || {};
+        var location = data.location || {};
 
-        // Validate and format temperature
-        var temperature = 28; // default value
-        if (typeof weather.tp === 'number' && !isNaN(weather.tp)) {
-            temperature = weather.tp;
-        }
-
-        // Apply reasonable temperature bounds
-        if (temperature < -10 || temperature > 50) {
-            temperature = 28;
-        } else {
-            temperature = Math.round(temperature * 10) / 10;
-        }
-
-        // Store temperature for dynamic suggestions
+        // Temperature
+        var temperature = Math.round(current.temperature) || 0;
         lastTemperature = temperature;
 
-        // Calculate feels like temperature
-        var humidity = 65; // default value
-        if (!isNaN(weather.hu) && weather.hu > 0 && weather.hu <= 100) {
-            humidity = weather.hu;
-        }
+        // Min/Max temps
+        var tempMin = Math.round(daily.tempMin) || 0;
+        var tempMax = Math.round(daily.tempMax) || 0;
 
-        var tempAdjustment = humidity > 70 ? 2 : -1;
-        var feelsLikeTemp = Math.round((temperature + tempAdjustment) * 10) / 10;
+        // Humidity
+        var humidity = current.humidity || 0;
 
-        // Format other values
-        var windSpeedKmh = formatWindSpeed(weather.ws);
-
-        var windDirection = 0; // default value
-        if (!isNaN(weather.wd)) {
-            windDirection = weather.wd;
-        }
+        // Wind
+        var windSpeed = Math.round(current.windSpeed) || 0;
+        var windDirection = current.windDirection || 0;
         var windCardinal = angleToCardinal(windDirection);
 
-        var pressure = 1013; // default value (standard atmospheric pressure)
-        if (!isNaN(weather.pr) && weather.pr > 900 && weather.pr < 1100) {
-            pressure = weather.pr;
+        // Weather code for icon
+        var weatherCode = current.weatherCode || 0;
+        var icon = weatherCodes[weatherCode] || '☀️';
+
+        // Location display
+        var locationDisplay = 'กำลังโหลด...';
+        if (location.name) {
+            locationDisplay = location.name;
+            if (location.state) {
+                locationDisplay += ', ' + location.state;
+            }
         }
 
-        // Update location display
-        var locationDisplay;
-        if (city === 'กำลังโหลด') {
-            locationDisplay = 'กำลังโหลดข้อมูล';
-        } else if (!state || state === 'กำลังโหลด') {
-            locationDisplay = city;
-        } else {
-            locationDisplay = city + ', ' + state;
+        // Precipitation forecast
+        var precipText = 'ไม่มีฝนในช่วงนี้';
+        var precipIconEmoji = '💧';
+        if (hourly.precipitation && hourly.time) {
+            for (var i = 0; i < hourly.precipitation.length; i++) {
+                if (hourly.precipitation[i] > 0.1) {
+                    var rainTime = new Date(hourly.time[i]);
+                    var hours = rainTime.getHours();
+                    var timeStr = (hours < 10 ? '0' : '') + hours + ':00 น.';
+                    precipText = 'ฝนอาจตกตอน ' + timeStr;
+                    precipIconEmoji = '🌧️';
+                    break;
+                }
+            }
+        }
+
+        // Currently raining
+        if (current.precipitation > 0 || rainCodes.indexOf(weatherCode) !== -1) {
+            precipText = 'ฝนกำลังตก';
+            precipIconEmoji = '🌧️';
         }
 
         // Update DOM elements
         weatherLocation.textContent = locationDisplay;
         temperatureValue.textContent = temperature + '°C';
-        feelsLike.textContent = 'รู้สึกเหมือน ' + feelsLikeTemp + '°C';
-        humidityValue.textContent = humidity + '%';
-        windSpeedValue.textContent = windSpeedKmh + ' กม./ชม.';
-        pressureValue.textContent = pressure + ' hPa';
-        windDirectionValue.textContent = windDirection + '°';
-        windCardinalValue.textContent = '(' + windCardinal + ')';
+        tempRange.textContent = 'ต่ำสุด ' + tempMin + '° • สูงสุด ' + tempMax + '°';
+        humidityValue.textContent = 'ความชื้น ' + humidity + '%';
+        precipForecast.textContent = precipText;
+        precipIcon.textContent = precipIconEmoji;
+        parseEmoji(precipIcon);
+        windInfo.textContent = 'ลม ' + windSpeed + ' กม./ชม. ทิศ' + windCardinal;
 
         // Update weather icon
         if (weatherIcon) {
-            var iconCode = weather.ic || '01d';
-            weatherIcon.textContent = weatherIcons[iconCode] || '☀️';
+            weatherIcon.textContent = icon;
             parseEmoji(weatherIcon);
         }
+
+        // Check for weather alerts
+        var alert = getWeatherAlert(
+            weatherCode,
+            current.precipitation,
+            hourly.precipitation,
+            hourly.time,
+            temperature
+        );
+
+        if (alert.show && weatherAlert) {
+            weatherAlert.classList.remove('hidden', 'rain', 'heat', 'storm');
+            weatherAlert.classList.add(alert.type);
+            alertIcon.textContent = alert.icon;
+            parseEmoji(alertIcon);
+            alertText.textContent = alert.text;
+        } else if (weatherAlert) {
+            weatherAlert.classList.add('hidden');
+        }
+    }
+
+    // Fetch weather data from Open-Meteo endpoint
+    function fetchWeatherData() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'api/weather', true);
+        xhr.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        xhr.setRequestHeader('Pragma', 'no-cache');
+
+        xhr.onload = function() {
+            try {
+                if (xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    if (data.status === 'success') {
+                        updateWeatherCard(data);
+                    } else {
+                        console.error('Weather API error:', data.error || 'Unknown error');
+                        loadFallbackWeatherData();
+                    }
+                } else {
+                    console.error('Weather HTTP error:', xhr.status);
+                    loadFallbackWeatherData();
+                }
+            } catch (e) {
+                console.error('Failed to parse weather response:', e);
+                loadFallbackWeatherData();
+            }
+        };
+
+        xhr.onerror = function() {
+            console.error('Weather network error');
+            loadFallbackWeatherData();
+        };
+
+        xhr.send();
+    }
+
+    // Fallback weather data
+    function loadFallbackWeatherData() {
+        var fallbackData = {
+            status: 'success',
+            location: { name: 'กำลังโหลด', state: '' },
+            current: {
+                temperature: 0,
+                humidity: 0,
+                precipitation: 0,
+                weatherCode: 0,
+                windSpeed: 0,
+                windDirection: 0
+            },
+            daily: { tempMin: 0, tempMax: 0 },
+            hourly: { precipitation: [], precipitationProbability: [], time: [] }
+        };
+        updateWeatherCard(fallbackData);
     }
 
     // Update footer with last updated time
@@ -413,7 +535,6 @@
                     var data = JSON.parse(xhr.responseText);
                     if (data.data && data.data.data) {
                         updateAQICard(data.data.data);
-                        updateWeatherCard(data.data.data);
                         updateFooter(data);
                         isLoading = false;
                     } else {
@@ -439,7 +560,7 @@
         xhr.send();
     }
 
-    // Fallback data - matches default display values
+    // Fallback AQI data - matches default display values
     function loadFallbackData() {
         var fallbackData = {
             status: 'success',
@@ -458,15 +579,6 @@
                         mainus: 'p2',
                         aqicn: 0,
                         maincn: 'p2'
-                    },
-                    weather: {
-                        ts: new Date().toISOString(),
-                        tp: 0,
-                        pr: 0,
-                        hu: 0,
-                        ws: 0,
-                        wd: 0,
-                        ic: '01d'
                     }
                 }
             },
@@ -475,7 +587,6 @@
         };
 
         updateAQICard(fallbackData.data);
-        updateWeatherCard(fallbackData.data);
         updateFooter(fallbackData);
         isLoading = false;
     }
@@ -547,16 +658,13 @@
 
         // Initial data fetch
         fetchAirQualityData();
+        fetchWeatherData();
 
         // Set up intervals
         setInterval(updateDateTime, 1000); // Update time every second
         setInterval(syncTime, 5 * 60 * 1000); // Sync time every 5 minutes
-        setInterval(fetchAirQualityData, 60 * 1000); // Fetch data every minute
-
-        // Force refresh every 5 minutes
-        setInterval(function() {
-            fetchAirQualityData();
-        }, 5 * 60 * 1000);
+        setInterval(fetchAirQualityData, 60 * 1000); // Fetch AQI data every minute
+        setInterval(fetchWeatherData, 5 * 60 * 1000); // Fetch weather data every 5 minutes
 
         // Check for seasonal theme change daily (in case page is open across months)
         setInterval(applySeasonalTheme, 24 * 60 * 60 * 1000);
@@ -576,6 +684,7 @@
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
                 fetchAirQualityData();
+                fetchWeatherData();
             }
         });
     }

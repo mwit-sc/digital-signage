@@ -127,7 +127,7 @@
                     </div>
                 </div>
 
-                <!-- Weather Card - Glassmorphism design -->
+                <!-- Weather Card - Glassmorphism design (Open-Meteo) -->
                 <div class="w-1/2 glass-card weather-card rounded-3xl shadow-2xl overflow-hidden relative" id="weather-card">
 
                     <!-- Decorative snowflakes (visible only in winter) -->
@@ -135,7 +135,7 @@
                     <span class="card-snowflake winter-only" style="top: 50%; right: 8%;">❄</span>
                     <span class="card-snowflake winter-only" style="bottom: 15%; left: 20%;">❄</span>
 
-                    <div class="p-10 flex flex-col h-full justify-between relative z-10">
+                    <div class="p-10 flex flex-col h-full relative z-10">
 
                         <!-- Header -->
                         <div class="flex justify-between items-start">
@@ -148,49 +148,37 @@
                         </div>
 
                         <!-- Temperature display -->
-                        <div class="flex flex-col items-center justify-center flex-grow py-6">
+                        <div class="flex flex-col items-center justify-center flex-grow py-4">
                             <div class="text-8xl font-black text-white leading-none drop-shadow-2xl tracking-tight" id="temperature-value">
                                 0°C
                             </div>
-                            <div class="text-2xl font-semibold text-white/95 mt-4" id="feels-like">
-                                รู้สึกเหมือน 0°C
+                            <div class="text-2xl font-semibold text-white/90 mt-3" id="temp-range">
+                                ต่ำสุด 0° • สูงสุด 0°
                             </div>
                         </div>
 
-                        <!-- Weather details grid -->
-                        <div class="grid grid-cols-2 gap-4 mt-6">
-                            <div class="weather-metric-box">
-                                <div class="flex items-center mb-2">
-                                    <img class="w-5 h-5 mr-2" src="assets/icons/droplets.svg" alt="Humidity">
-                                    <span class="text-lg font-semibold">ความชื้น</span>
+                        <!-- Weather info sections -->
+                        <div class="space-y-3">
+                            <!-- Precipitation forecast -->
+                            <div class="weather-info-row">
+                                <span class="text-2xl mr-3" id="precip-icon">💧</span>
+                                <div>
+                                    <div class="text-xl font-semibold text-white" id="precip-forecast">กำลังโหลด...</div>
+                                    <div class="text-lg text-white/80" id="humidity-value">ความชื้น 0%</div>
                                 </div>
-                                <div class="text-3xl font-bold" id="humidity-value">0%</div>
                             </div>
 
-                            <div class="weather-metric-box">
-                                <div class="flex items-center mb-2">
-                                    <img class="w-5 h-5 mr-2" src="assets/icons/wind.svg" alt="Wind">
-                                    <span class="text-lg font-semibold">ความเร็วลม</span>
-                                </div>
-                                <div class="text-3xl font-bold" id="wind-speed-value">0 กม./ชม.</div>
+                            <!-- Wind info -->
+                            <div class="weather-info-row">
+                                <span class="text-2xl mr-3">💨</span>
+                                <div class="text-xl font-semibold text-white" id="wind-info">ลม 0 กม./ชม. ทิศเหนือ</div>
                             </div>
+                        </div>
 
-                            <div class="weather-metric-box">
-                                <div class="flex items-center mb-2">
-                                    <img class="w-5 h-5 mr-2" src="assets/icons/gauge.svg" alt="Pressure">
-                                    <span class="text-lg font-semibold">ความดัน</span>
-                                </div>
-                                <div class="text-3xl font-bold" id="pressure-value">0 hPa</div>
-                            </div>
-
-                            <div class="weather-metric-box">
-                                <div class="flex items-center mb-2">
-                                    <img class="w-5 h-5 mr-2" src="assets/icons/compass.svg" alt="Wind Direction">
-                                    <span class="text-lg font-semibold">ทิศทางลม</span>
-                                </div>
-                                <div class="text-2xl font-bold" id="wind-direction-value">0°</div>
-                                <div class="text-base font-medium opacity-90" id="wind-cardinal-value">(เหนือ)</div>
-                            </div>
+                        <!-- Weather alert banner (hidden by default) -->
+                        <div class="weather-alert hidden" id="weather-alert">
+                            <span class="text-2xl" id="alert-icon">🌧️</span>
+                            <span class="text-lg font-semibold" id="alert-text">ฝนกำลังตก อย่าลืมดูแลตัวเองด้วยนะ!</span>
                         </div>
                     </div>
                 </div>

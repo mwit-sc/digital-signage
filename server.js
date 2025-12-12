@@ -154,6 +154,104 @@ app.get('/api/air-quality', async (req, res) => {
     }
 });
 
+// Open-Meteo Weather endpoint
+const OPEN_METEO_URL = 'https://api.open-meteo.com/v1/forecast';
+const WEATHER_CACHE_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+const weatherCache = new Map();
+
+// Salaya, Nakhon Pathom coordinates
+const LOCATION = {
+    latitude: 13.796,
+    longitude: 100.326,
+    name: 'Salaya',
+    state: 'Nakhon Pathom'
+};
+
+async function fetchWeatherData() {
+    const url = new URL(OPEN_METEO_URL);
+    url.searchParams.append('latitude', LOCATION.latitude);
+    url.searchParams.append('longitude', LOCATION.longitude);
+    url.searchParams.append('current', 'temperature_2m,relative_humidity_2m,precipitation,weather_code,wind_speed_10m,wind_direction_10m');
+    url.searchParams.append('hourly', 'precipitation_probability,precipitation');
+    url.searchParams.append('daily', 'temperature_2m_min,temperature_2m_max');
+    url.searchParams.append('timezone', 'Asia/Bangkok');
+    url.searchParams.append('forecast_days', '1');
+
+    try {
+        const response = await fetch(url.toString(), {
+            headers: { 'Cache-Control': 'no-store' },
+            timeout: 15000
+        });
+
+        if (!response.ok) {
+            return { error: 'Failed to fetch weather data', status: 500 };
+        }
+
+        const data = await response.json();
+        return {
+            status: 'success',
+            location: LOCATION,
+            current: {
+                temperature: data.current.temperature_2m,
+                humidity: data.current.relative_humidity_2m,
+                precipitation: data.current.precipitation,
+                weatherCode: data.current.weather_code,
+                windSpeed: data.current.wind_speed_10m,
+                windDirection: data.current.wind_direction_10m
+            },
+            daily: {
+                tempMin: data.daily.temperature_2m_min[0],
+                tempMax: data.daily.temperature_2m_max[0]
+            },
+            hourly: {
+                precipitation: data.hourly.precipitation.slice(0, 6),
+                precipitationProbability: data.hourly.precipitation_probability.slice(0, 6),
+                time: data.hourly.time.slice(0, 6)
+            }
+        };
+    } catch (error) {
+        return { error: 'Failed to fetch weather data: ' + error.message, status: 500 };
+    }
+}
+
+app.get('/api/weather', async (req, res) => {
+    try {
+        // Check cache
+        const cached = weatherCache.get('weather');
+        if (cached && (Date.now() - cached.timestamp) < WEATHER_CACHE_DURATION_MS) {
+            return res.json({ ...cached.data, cached: true, lastFetch: cached.lastFetch });
+        }
+
+        // Fetch fresh data
+        const weatherData = await fetchWeatherData();
+
+        if (weatherData.error) {
+            // Return stale cache if available
+            if (cached) {
+                return res.json({ ...cached.data, cached: true, stale: true, lastFetch: cached.lastFetch });
+            }
+            return res.status(weatherData.status || 500).json(weatherData);
+        }
+
+        // Save to cache
+        weatherCache.set('weather', {
+            data: weatherData,
+            timestamp: Date.now(),
+            lastFetch: new Date().toISOString()
+        });
+
+        res.json({ ...weatherData, cached: false, lastFetch: new Date().toISOString() });
+
+    } catch (error) {
+        console.error('Weather API Error:', error.message);
+        const cached = weatherCache.get('weather');
+        if (cached) {
+            return res.json({ ...cached.data, cached: true, stale: true, error: error.message });
+        }
+        res.status(500).json({ error: 'An error occurred while fetching weather data' });
+    }
+});
+
 // Time endpoint
 app.get('/api/time', (req, res) => {
     try {

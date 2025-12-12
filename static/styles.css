@@ -263,20 +263,63 @@ body.winter-theme .winter-only {
     box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.5), inset 0 0 80px rgba(96, 165, 250, 0.2) !important;
 }
 
-/* Weather metric boxes - glassmorphism style */
-.weather-metric-box {
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
-    padding: 16px;
-    color: white;
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+/* Weather info rows */
+.weather-info-row {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 12px 16px;
 }
 
-.weather-metric-box img {
-    filter: brightness(0) saturate(100%) invert(1);
-    -webkit-filter: brightness(0) saturate(100%) invert(1);
+/* Weather alert banner */
+.weather-alert {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    gap: 12px;
+    background: rgba(59, 130, 246, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    color: white;
+    -webkit-animation: alertPulse 2s ease-in-out infinite;
+    animation: alertPulse 2s ease-in-out infinite;
+}
+
+.weather-alert.rain {
+    background: rgba(59, 130, 246, 0.85);
+}
+
+.weather-alert.heat {
+    background: rgba(249, 115, 22, 0.85);
+}
+
+.weather-alert.storm {
+    background: rgba(239, 68, 68, 0.85);
+}
+
+@-webkit-keyframes alertPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+}
+
+@keyframes alertPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
 }
 
 /* Ensure weather card text stays white */
