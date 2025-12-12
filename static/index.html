@@ -13,14 +13,6 @@
     <meta name="description" content="ระบบแสดงคุณภาพอากาศสำหรับ MWIT Digital Signage System">
     <meta name="author" content="Student Committee">
 
-    <!-- Preload critical assets -->
-    <link rel="preload" href="sky.webp" as="image">
-    <link rel="preload" href="face/green.svg" as="image">
-    <link rel="preload" href="face/yellow.svg" as="image">
-    <link rel="preload" href="face/orange.svg" as="image">
-    <link rel="preload" href="face/red.svg" as="image">
-    <link rel="preload" href="face/purple.svg" as="image">
-
     <!-- Google Fonts for Thai language support -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +28,7 @@
         <!-- Beautiful gradient background with sky overlay -->
         <div class="fixed inset-0 z-0">
             <img
-                src="sky.webp"
+                src="assets/sky.webp"
                 alt="Sky Background"
                 class="w-full h-full object-cover object-center"
             />
@@ -89,7 +81,7 @@
 
                         <!-- Main AQI display - perfectly sized for distance viewing -->
                         <div class="flex flex-col items-center justify-center flex-grow py-8">
-                            <div class="text-9xl font-black leading-none text-white drop-shadow-2xl tracking-tight" id="aqi-value" style="font-size: 10rem;">
+                            <div class="text-10xl font-black leading-none text-white drop-shadow-2xl tracking-tight" id="aqi-value">
                                 0
                             </div>
                             <div class="text-4xl font-bold text-white mt-4 text-center tracking-wide" id="aqi-level">
@@ -101,7 +93,7 @@
                         </div>
 
                         <!-- Footer info -->
-                        <div class="border-t border-white/30 pt-6 space-y-2">
+                        <div class="border-t border-white/20 pt-6 space-y-2">
                             <div class="text-white text-2xl font-bold" id="pm25-info">
                                 PM 2.5: กำลังโหลด...
                             </div>
@@ -126,10 +118,7 @@
                                 <div class="text-3xl font-black text-white" id="weather-location">กำลังโหลด...</div>
                             </div>
                             <div class="flex items-center">
-                                <svg class="w-6 h-6 text-white mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
+                                <img class="w-6 h-6 text-white mr-2" src="assets/icons/map-pin.svg" alt="Location">
                                 <div class="text-xl font-semibold text-white">
                                     Salaya
                                 </div>
@@ -138,7 +127,7 @@
 
                         <!-- Temperature display -->
                         <div class="flex flex-col items-center justify-center flex-grow py-6">
-                            <div class="text-8xl font-black text-white leading-none drop-shadow-2xl tracking-tight" id="temperature-value" style="font-size: 8rem;">
+                            <div class="text-8xl font-black text-white leading-none drop-shadow-2xl tracking-tight" id="temperature-value">
                                 0°C
                             </div>
                             <div class="text-2xl font-semibold text-white/95 mt-4" id="feels-like">
@@ -150,10 +139,7 @@
                         <div class="grid grid-cols-2 gap-4 mt-6">
                             <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-white border border-white/20">
                                 <div class="flex items-center mb-2">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 18v-1a3 3 0 013-3h3a3 3 0 013 3v1"></path>
-                                        <circle cx="9" cy="9" r="3"></circle>
-                                    </svg>
+                                    <img class="w-5 h-5 mr-2" src="assets/icons/droplets.svg" alt="Humidity">
                                     <span class="text-lg font-semibold">ความชื้น</span>
                                 </div>
                                 <div class="text-3xl font-bold" id="humidity-value">0%</div>
@@ -161,9 +147,7 @@
 
                             <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-white border border-white/20">
                                 <div class="flex items-center mb-2">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
-                                    </svg>
+                                    <img class="w-5 h-5 mr-2" src="assets/icons/wind.svg" alt="Wind">
                                     <span class="text-lg font-semibold">ความเร็วลม</span>
                                 </div>
                                 <div class="text-3xl font-bold" id="wind-speed-value">0 กม./ชม.</div>
@@ -171,10 +155,7 @@
 
                             <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-white border border-white/20">
                                 <div class="flex items-center mb-2">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <polyline points="12,6 12,12 16,14"></polyline>
-                                    </svg>
+                                    <img class="w-5 h-5 mr-2" src="assets/icons/gauge.svg" alt="Pressure">
                                     <span class="text-lg font-semibold">ความดัน</span>
                                 </div>
                                 <div class="text-3xl font-bold" id="pressure-value">0 hPa</div>
@@ -182,10 +163,7 @@
 
                             <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 text-white border border-white/20">
                                 <div class="flex items-center mb-2">
-                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <polyline points="12,6 12,12 16,14"></polyline>
-                                    </svg>
+                                    <img class="w-5 h-5 mr-2" src="assets/icons/compass.svg" alt="Wind Direction">
                                     <span class="text-lg font-semibold">ทิศทางลม</span>
                                 </div>
                                 <div class="text-2xl font-bold" id="wind-direction-value">0°</div>
@@ -201,13 +179,13 @@
         <footer class="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-md text-white p-6 flex justify-between items-center z-20 border-t border-white/20">
             <div class="flex items-center">
                 <img
-                    src="sc.png"
+                    src="assets/sc.png"
                     alt="SC Logo"
                     class="h-12 w-auto mr-4"
                 />
                 <div class="text-base">
                     <p class="font-semibold">ขับเคลื่อนโดยคณะกรรมการสภานักเรียนรุ่นที่ 33</p>
-                    <p class="font-normal opacity-90">Developed by 33ᵗʰ Student Committee</p>
+                    <p class="font-normal opacity-90">Developed by 33rd Student Committee</p>
                 </div>
             </div>
 
@@ -222,9 +200,9 @@
         </footer>
 
         <!-- Elegant QR Code -->
-        <div class="absolute bottom-28 right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-xl z-20 border border-white/30">
+        <div class="absolute bottom-28 right-8 bg-white/95 backdrop-blur-sm p-3 rounded-xl shadow-xl z-20 border border-white/20">
             <img
-                src="air-quality-qr.png"
+                src="assets/air-quality-qr.png"
                 alt="QR Code"
                 class="w-28 h-28"
             />

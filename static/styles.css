@@ -14,6 +14,17 @@ body {
     background-color: rgba(0, 0, 0, 0.4);
 }
 
+/* Large text sizes for AQI and temperature displays */
+.text-10xl {
+    font-size: 10rem !important;
+    line-height: 1 !important;
+}
+
+.text-8xl {
+    font-size: 8rem !important;
+    line-height: 1 !important;
+}
+
 /* Support for older webkit browsers */
 @supports (-webkit-backdrop-filter: blur(1px)) {
     .backdrop-blur-sm {
@@ -69,6 +80,17 @@ body {
         font-size: 2rem !important;
         line-height: 1.3;
     }
+
+    /* Extra large sizes matching React component */
+    .text-10xl {
+        font-size: 10rem !important;
+        line-height: 1 !important;
+    }
+
+    .text-8xl {
+        font-size: 8rem !important;
+        line-height: 1 !important;
+    }
 }
 
 /* WebOS specific adjustments */
@@ -83,7 +105,12 @@ body {
     }
 }
 
-/* AQI Card Dynamic Styling Classes */
+/* AQI Card Dynamic Styling Classes - Enhanced to match React component */
+.aqi-card.aqi-loading {
+    background: linear-gradient(to bottom right, rgb(107, 114, 128), rgb(75, 85, 99)) !important;
+    box-shadow: 0 25px 50px -12px rgba(107, 114, 128, 0.5) !important;
+}
+
 .aqi-card.aqi-good {
     background: linear-gradient(to bottom right, rgb(74, 222, 128), rgb(34, 197, 94)) !important;
     box-shadow: 0 25px 50px -12px rgba(34, 197, 94, 0.5) !important;
@@ -94,7 +121,33 @@ body {
     box-shadow: 0 25px 50px -12px rgba(234, 179, 8, 0.5) !important;
 }
 
-.aqi-card.aqi-moderate .text-white {
+/* Force white text for header elements regardless of AQI state */
+header .text-white,
+header p,
+header h1,
+#current-datetime .text-white,
+#date-display,
+#time-display {
+    color: white !important;
+}
+
+/* Force white text for weather card elements */
+#feels-like,
+#weather-location,
+#temperature-value,
+.bg-gradient-to-br.from-blue-500 .text-white,
+.bg-gradient-to-br.from-blue-500 .text-xl,
+.bg-gradient-to-br.from-blue-500 .text-3xl {
+    color: white !important;
+}
+
+/* Only target specific AQI elements for black text during moderate conditions */
+.aqi-card.aqi-moderate #aqi-value,
+.aqi-card.aqi-moderate #aqi-level,
+.aqi-card.aqi-moderate #aqi-message,
+.aqi-card.aqi-moderate #pm25-info,
+.aqi-card.aqi-moderate .text-xl.font-bold.tracking-wide,
+.aqi-card.aqi-moderate .text-3xl.font-black {
     color: rgb(0, 0, 0) !important;
 }
 
@@ -134,6 +187,16 @@ img, svg {
         background: rgba(0, 0, 0, 0.6) !important;
     }
 }
+
+/* Reduce border opacity for weather cards */
+.bg-white\/20 {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.border-white\/20 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
@@ -239,4 +302,32 @@ img, svg {
 .font-semibold,
 .font-medium {
     font-display: swap;
+}
+
+/* SVG icons inherit color from parent */
+svg {
+    color: inherit;
+}
+
+/* Ensure SVG icons in weather cards are white */
+.bg-white\/20 svg,
+.bg-white\/20 img {
+    color: white !important;
+    filter: brightness(0) saturate(100%) invert(1) !important;
+    -webkit-filter: brightness(0) saturate(100%) invert(1) !important;
+}
+
+/* More specific targeting for weather card icons */
+.bg-white\/20 img[src*="icons"],
+.grid .bg-white\/20 img,
+.grid .bg-white\/20 svg {
+    filter: brightness(0) saturate(100%) invert(1) !important;
+    -webkit-filter: brightness(0) saturate(100%) invert(1) !important;
+}
+
+/* Ensure map-pin icon in weather header is white */
+.bg-gradient-to-br.from-blue-500 img,
+.bg-gradient-to-br.from-blue-500 svg {
+    filter: brightness(0) saturate(100%) invert(1);
+    -webkit-filter: brightness(0) saturate(100%) invert(1) !important;
 }

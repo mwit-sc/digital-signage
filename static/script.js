@@ -35,7 +35,7 @@
     // Get AQI information for styling and display
     function getAQIInfo(aqi) {
         if (aqi <= 0) return {
-            bgClass: '',
+            bgClass: 'aqi-loading',
             textColor: 'text-white',
             level: 'กำลังโหลด',
             message: 'กรุณารอสักครู่',
@@ -166,22 +166,50 @@
         var state = data.state || '';
 
         // Validate and format temperature
-        var temperature = typeof weather.tp === 'number' && !isNaN(weather.tp) ? weather.tp : 28;
-        temperature = temperature < -10 || temperature > 50 ? 28 : Math.round(temperature * 10) / 10;
+        var temperature = 28; // default value
+        if (typeof weather.tp === 'number' && !isNaN(weather.tp)) {
+            temperature = weather.tp;
+        }
+
+        // Apply reasonable temperature bounds
+        if (temperature < -10 || temperature > 50) {
+            temperature = 28;
+        } else {
+            temperature = Math.round(temperature * 10) / 10;
+        }
 
         // Calculate feels like temperature
-        var humidity = !isNaN(weather.hu) && weather.hu > 0 && weather.hu <= 100 ? weather.hu : 65;
-        var feelsLikeTemp = Math.round((temperature + (humidity > 70 ? 2 : -1)) * 10) / 10;
+        var humidity = 65; // default value
+        if (!isNaN(weather.hu) && weather.hu > 0 && weather.hu <= 100) {
+            humidity = weather.hu;
+        }
+
+        var tempAdjustment = humidity > 70 ? 2 : -1;
+        var feelsLikeTemp = Math.round((temperature + tempAdjustment) * 10) / 10;
 
         // Format other values
         var windSpeedKmh = formatWindSpeed(weather.ws);
-        var windDirection = !isNaN(weather.wd) ? weather.wd : 0;
+
+        var windDirection = 0; // default value
+        if (!isNaN(weather.wd)) {
+            windDirection = weather.wd;
+        }
         var windCardinal = angleToCardinal(windDirection);
-        var pressure = !isNaN(weather.pr) && weather.pr > 900 && weather.pr < 1100 ? weather.pr : 1013;
+
+        var pressure = 1013; // default value (standard atmospheric pressure)
+        if (!isNaN(weather.pr) && weather.pr > 900 && weather.pr < 1100) {
+            pressure = weather.pr;
+        }
 
         // Update location display
-        var locationDisplay = city === 'กำลังโหลด' ? 'กำลังโหลดข้อมูล' :
-                             (!state || state === 'กำลังโหลด') ? city : city + ', ' + state;
+        var locationDisplay;
+        if (city === 'กำลังโหลด') {
+            locationDisplay = 'กำลังโหลดข้อมูล';
+        } else if (!state || state === 'กำลังโหลด') {
+            locationDisplay = city;
+        } else {
+            locationDisplay = city + ', ' + state;
+        }
 
         // Update DOM elements
         weatherLocation.textContent = locationDisplay;
@@ -222,7 +250,7 @@
     function fetchAirQualityData() {
         // Using XMLHttpRequest for Chrome 49 compatibility
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'api/air-quality.php', true);
+        xhr.open('GET', 'api/air-quality', true);
         xhr.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
         xhr.setRequestHeader('Pragma', 'no-cache');
 
@@ -258,7 +286,7 @@
         xhr.send();
     }
 
-    // Load fallback/dummy data
+    // Dummy data
     function loadFallbackData() {
         var dummyData = {
             status: 'success',
@@ -304,7 +332,7 @@
         var xhr = new XMLHttpRequest();
         var start = Date.now();
 
-        xhr.open('GET', 'api/time.php', true);
+        xhr.open('GET', 'api/time', true);
         xhr.setRequestHeader('Cache-Control', 'no-store');
 
         xhr.onload = function() {
@@ -356,7 +384,7 @@
 
     // Initialize the application
     function init() {
-        console.log('Initializing Digital Signage...');
+        //console.log('Initializing ...');
 
         // Initial time sync
         syncTime();
@@ -374,7 +402,7 @@
             fetchAirQualityData();
         }, 5 * 60 * 1000);
 
-        console.log('Digital Signage initialized successfully');
+        // console.log('initialized successfully');
     }
 
     // Wait for DOM to be ready
