@@ -279,6 +279,17 @@ body.winter-theme .winter-only {
     -webkit-filter: brightness(0) saturate(100%) invert(1);
 }
 
+/* Ensure weather card text stays white */
+.weather-card,
+.weather-card .text-white,
+.weather-card .text-white\/90,
+.weather-card .text-white\/95,
+#weather-location,
+#temperature-value,
+#feels-like {
+    color: white !important;
+}
+
 /* ========================================
    WINTER BACKGROUND
    ======================================== */
