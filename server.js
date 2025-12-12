@@ -7,7 +7,25 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.static('static'));
+
+// Static assets with caching (1 day for CSS/JS/images, 1 hour for HTML)
+app.use(express.static('static', {
+    maxAge: '1d',
+    setHeaders: function(res, path) {
+        // HTML files should have shorter cache or no-cache for fresh content
+        if (path.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'public, max-age=3600'); // 1 hour
+        }
+        // CSS and JS files - longer cache with immutable hint
+        else if (path.endsWith('.css') || path.endsWith('.js')) {
+            res.setHeader('Cache-Control', 'public, max-age=86400'); // 1 day
+        }
+        // Images and fonts - longest cache
+        else if (path.match(/\.(png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)) {
+            res.setHeader('Cache-Control', 'public, max-age=604800'); // 1 week
+        }
+    }
+}));
 
 const API_URL = 'https://api.airvisual.com/v2/city';
 const CACHE_DURATION_MS = 30 * 60 * 1000; // 30 minutes
