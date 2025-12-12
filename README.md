@@ -1,12 +1,12 @@
-# Digital Signage - Static Version
+# Digital Signage
 
-This is a static HTML+CSS+JavaScript version of the Digital Signage application, compatible with older browsers (Chrome 49+) and using PHP for the backend API.
+A modern digital signage application displaying real-time air quality and weather information, built with Express.js backend and vanilla JavaScript frontend.
 
 ## Features
 
-- **Browser Compatibility**: Works on Chrome 49+ and other older browsers
-- **Static Frontend**: Pure HTML, CSS (Tailwind), and vanilla JavaScript
-- **PHP Backend**: Simple PHP scripts for API endpoints
+- **Real-time Data**: Live air quality and weather information from IQAir API
+- **Express.js Backend**: Modern Node.js server with API endpoints and caching
+- **Static Frontend**: Optimized HTML, CSS (Tailwind), and vanilla JavaScript
 - **Air Quality Data**: Real-time air quality information from IQAir API
 - **Weather Information**: Current weather conditions
 - **Thai Language Support**: Full Thai language interface
@@ -14,38 +14,43 @@ This is a static HTML+CSS+JavaScript version of the Digital Signage application,
 
 ## Setup Instructions
 
-### 1. Web Server Requirements
+### 1. Requirements
 
-- PHP 5.4 or higher
-- Apache/Nginx with mod_rewrite enabled
+- Node.js 14+ and npm/bun
 - Internet connection for API calls
 
 ### 2. Installation
 
-1. **Copy files to web server**:
+1. **Clone the repository**:
    ```bash
-   cp -r static/* /var/www/html/
+   git clone https://github.com/mwit-sc/digital-signage.git
+   cd digital-signage
    ```
 
-2. **Set up environment variables**:
+2. **Install dependencies**:
    ```bash
-   cd /var/www/html/api
+   npm install
+   # or using bun
+   bun install
+   ```
+
+3. **Set up environment variables**:
+   ```bash
    cp .env.example .env
    nano .env
    ```
 
-3. **Add your IQAir API key**:
+4. **Add your IQAir API key**:
    ```
    IQAIR_KEY=your_actual_api_key_here
+   PORT=3000  # Optional, defaults to 3000
    ```
 
-4. **Set proper permissions**:
+5. **Start the server**:
    ```bash
-   chmod 755 api/
-   chmod 644 api/*.php
-   chmod 666 api/.env
-   mkdir -p api/cache
-   chmod 777 api/cache
+   npm start
+   # or for development
+   npm run dev
    ```
 
 ### 3. Getting an API Key
@@ -55,41 +60,41 @@ This is a static HTML+CSS+JavaScript version of the Digital Signage application,
 3. Get your API key from the dashboard
 4. Add it to the `.env` file
 
-### 4. Apache Configuration
+### 4. Access the Application
 
-Ensure your Apache configuration allows:
-- `.htaccess` files (`AllowOverride All`)
-- `mod_rewrite` module enabled
-- `mod_expires` module enabled (optional, for caching)
-- `mod_deflate` module enabled (optional, for compression)
+Open your browser and navigate to:
+```
+http://localhost:3000
+```
 
 ## File Structure
 
 ```
-static/
-├── index.html              # Main HTML file
-├── styles.css             # Custom CSS for browser compatibility
-├── script.js              # Vanilla JavaScript application
-├── .htaccess             # Apache configuration
-├── api/                   # Backend API endpoints
-│   ├── air-quality.php   # Air quality data endpoint
-│   ├── time.php          # Server time endpoint
-│   ├── .env.example      # Environment variables template
-│   └── cache/            # Cache directory (auto-created)
-├── sky.webp              # Background image
-├── sc.png                # Logo
-├── air-quality-qr.png    # QR code
-└── face/                 # AQI emoji assets
-    ├── green.svg
-    ├── yellow.svg
-    ├── orange.svg
-    ├── red.svg
-    └── purple.svg
+.
+├── server.js              # Express.js server
+├── package.json          # Node.js dependencies
+├── .env.example          # Environment variables template
+├── static/               # Static frontend files
+│   ├── index.html       # Main HTML file
+│   ├── styles.css       # Custom CSS styles
+│   ├── script.js        # Frontend JavaScript
+│   └── assets/          # Static assets
+│       ├── face/        # AQI emoji assets
+│       │   ├── green.svg
+│       │   ├── yellow.svg
+│       │   ├── orange.svg
+│       │   ├── red.svg
+│       │   └── purple.svg
+│       ├── sky.webp     # Background image
+│       ├── sc.png       # Logo
+│       └── air-quality-qr.png # QR code
+└── api/                  # API cache directory (auto-created)
+    └── cache/           # Cached API responses
 ```
 
 ## API Endpoints
 
-### GET /api/air-quality.php
+### GET /api/air-quality
 Returns air quality and weather data with caching.
 
 **Response**:
@@ -118,7 +123,7 @@ Returns air quality and weather data with caching.
 }
 ```
 
-### GET /api/time.php
+### GET /api/time
 Returns current server time in ISO format.
 
 **Response**:
@@ -150,28 +155,35 @@ Returns current server time in ISO format.
 
 ## Deployment Options
 
-### 1. Shared Hosting
-Most shared hosting providers support PHP. Simply upload the files and configure the environment variables.
+### 1. VPS/Dedicated Server
+Install Node.js and run the application using PM2 or systemd.
 
-### 2. VPS/Dedicated Server
-Install Apache/Nginx and PHP, then deploy the files.
-
-### 3. Docker
+### 2. Docker
 ```dockerfile
-FROM php:7.4-apache
-COPY static/ /var/www/html/
-RUN a2enmod rewrite
-RUN a2enmod expires
-RUN a2enmod deflate
-RUN a2enmod headers
+FROM node:18-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install --production
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]
+```
+
+### 3. Using PM2
+```bash
+npm install -g pm2
+pm2 start server.js --name digital-signage
+pm2 save
+pm2 startup
 ```
 
 ### 4. Cloud Platforms
-- **Vercel**: Not recommended (Node.js focus)
-- **Netlify**: Use with Netlify Functions (requires conversion)
-- **DigitalOcean App Platform**: Supports PHP
-- **AWS EC2**: Full control, supports PHP
-- **Google Cloud Platform**: Supports PHP
+- **Vercel**: Supports Node.js applications
+- **Railway**: One-click deployment for Node.js
+- **DigitalOcean App Platform**: Supports Node.js
+- **AWS EC2/Elastic Beanstalk**: Full control
+- **Google Cloud Run**: Serverless Node.js deployment
+- **Heroku**: Simple Node.js deployment
 
 ## Configuration
 
@@ -180,23 +192,23 @@ RUN a2enmod headers
 # Required
 IQAIR_KEY=your_api_key_here
 
-# Optional (with defaults)
+# Optional
+PORT=3000                  # Server port (defaults to 3000)
 CACHE_DURATION=1800        # Cache duration in seconds (30 minutes)
-TIMEZONE=Asia/Bangkok      # Server timezone
 ```
 
 ### Cache Configuration
-The application uses file-based caching in `/api/cache/`. Ensure this directory is writable by the web server.
+The application uses file-based caching in `/api/cache/`. This directory is automatically created on first run.
 
 ### Location Configuration
-To change the monitored location, edit `air-quality.php`:
-```php
-$url = API_URL . '?' . http_build_query(array(
-    'city' => 'Your-City',
-    'state' => 'Your-State',
-    'country' => 'Your-Country',
-    'key' => $api_key
-));
+To change the monitored location, edit `server.js`:
+```javascript
+const params = new URLSearchParams({
+    city: 'Your-City',
+    state: 'Your-State',
+    country: 'Your-Country',
+    key: apiKey
+});
 ```
 
 ## Troubleshooting
@@ -204,33 +216,33 @@ $url = API_URL . '?' . http_build_query(array(
 ### Common Issues
 
 1. **"Missing IQAIR_KEY" error**:
-   - Ensure `.env` file exists in `/api/` directory
+   - Ensure `.env` file exists in project root
    - Check API key is correctly set
-   - Verify file permissions
+   - Restart the server after changing `.env`
 
 2. **"Failed to fetch" error**:
    - Check internet connection
    - Verify API key is valid and not expired
    - Check API rate limits
 
-3. **Cache directory errors**:
-   - Ensure `api/cache/` directory exists
-   - Check directory permissions (should be writable)
+3. **Port already in use**:
+   - Change the PORT in `.env` file
+   - Or stop the process using the port
 
 4. **Blank page**:
    - Check browser console for JavaScript errors
-   - Verify all assets are loading correctly
-   - Check Apache error logs
+   - Verify server is running on correct port
+   - Check Node.js console for server errors
 
-5. **Tailwind CSS not loading**:
-   - Verify CDN connection
-   - Check `.htaccess` configuration
-   - Try different CDN URL if needed
+5. **API rate limit errors**:
+   - Free IQAir tier limited to 10,000 calls/month
+   - Increase CACHE_DURATION to reduce API calls
+   - Consider upgrading API plan for production use
 
-### Debug Mode
-Add this to your `.env` file for debugging:
-```
-DEBUG=true
+### Development Mode
+Use nodemon for auto-restart on file changes:
+```bash
+npm run dev
 ```
 
 ## Performance Optimization
@@ -250,10 +262,18 @@ DEBUG=true
 - Minimize HTTP requests
 - Use CDN for external resources
 
-## Security Considerations
+## Scripts
 
-- Environment variables are protected by `.htaccess`
-- API responses include CORS headers
-- Cache directory is protected from direct access
-- XSS and clickjacking protection enabled
+- `npm start` - Start production server
+- `npm run dev` - Start development server with auto-reload
+
+## Technologies Used
+
+- **Backend**: Express.js, Node.js
+- **Frontend**: Vanilla JavaScript, Tailwind CSS
+- **APIs**: IQAir API for air quality data
+- **Build**: Babel for JavaScript compatibility
+
+## License
+
 
