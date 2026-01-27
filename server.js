@@ -51,7 +51,9 @@ function saveCacheData(data) {
         data: data,
         timestamp: Date.now(),
         cached: false,
-        lastFetch: new Date().toISOString()
+        lastFetch: new Date().toISOString(),
+        // Preserve location_note if it exists
+        location_note: data.data ? data.data.location_note : undefined
     };
 
     cache.set('air-quality', cacheData);
@@ -67,14 +69,15 @@ async function fetchAirQualityData() {
         };
     }
 
-    const url = new URL(API_URL);
-    url.searchParams.append('city', 'Salaya');
-    url.searchParams.append('state', 'Nakhon-pathom');
-    url.searchParams.append('country', 'Thailand');
-    url.searchParams.append('key', apiKey);
+    // Try Salaya first
+    const salayaUrl = new URL(API_URL);
+    salayaUrl.searchParams.append('city', 'Salaya');
+    salayaUrl.searchParams.append('state', 'Nakhon-pathom');
+    salayaUrl.searchParams.append('country', 'Thailand');
+    salayaUrl.searchParams.append('key', apiKey);
 
     try {
-        const response = await fetch(url.toString(), {
+        const response = await fetch(salayaUrl.toString(), {
             headers: {
                 'Cache-Control': 'no-store'
             },
@@ -82,27 +85,62 @@ async function fetchAirQualityData() {
         });
 
         if (!response.ok) {
-            return {
-                error: 'Failed to fetch air quality data from API',
-                status: 500
-            };
+            throw new Error('Salaya request failed');
         }
 
         const data = await response.json();
 
         if (data.status !== 'success') {
-            return {
-                error: `API returned error: ${data.data?.message || 'Unknown error'}`,
-                status: 400
-            };
+            throw new Error(`Salaya API error: ${data.data?.message || 'Unknown error'}`);
         }
 
         return data;
-    } catch (error) {
-        return {
-            error: 'Failed to fetch air quality data from API',
-            status: 500
-        };
+    } catch (salayaError) {
+        console.log('Salaya request failed, falling back to Nakhon Pathom:', salayaError.message);
+
+        // Fall back to Nakhon Pathom city
+        const nakhonPathomUrl = new URL(API_URL);
+        nakhonPathomUrl.searchParams.append('city', 'Nakhon-pathom');
+        nakhonPathomUrl.searchParams.append('state', 'Nakhon-pathom');
+        nakhonPathomUrl.searchParams.append('country', 'Thailand');
+        nakhonPathomUrl.searchParams.append('key', apiKey);
+
+        try {
+            const fallbackResponse = await fetch(nakhonPathomUrl.toString(), {
+                headers: {
+                    'Cache-Control': 'no-store'
+                },
+                timeout: 30000
+            });
+
+            if (!fallbackResponse.ok) {
+                return {
+                    error: 'Failed to fetch air quality data from both Salaya and Nakhon Pathom',
+                    status: 500
+                };
+            }
+
+            const fallbackData = await fallbackResponse.json();
+
+            if (fallbackData.status !== 'success') {
+                return {
+                    error: `API returned error for both locations: ${fallbackData.data?.message || 'Unknown error'}`,
+                    status: 400
+                };
+            }
+
+            // Add a note that this is fallback data
+            if (fallbackData.data) {
+                fallbackData.data.location_note = 'Using Nakhon Pathom data (Salaya unavailable)';
+            }
+
+            return fallbackData;
+        } catch (error) {
+            return {
+                error: 'Failed to fetch air quality data from both Salaya and Nakhon Pathom',
+                status: 500
+            };
+        }
     }
 }
 
@@ -116,6 +154,11 @@ app.get('/api/air-quality', async (req, res) => {
                 cachedData.cached = true;
                 const cacheAgeMinutes = Math.floor((Date.now() - cachedData.timestamp) / (1000 * 60));
                 cachedData.cacheAge = `${cacheAgeMinutes} minutes`;
+
+                // Ensure location_note is preserved in the response
+                if (cachedData.location_note && cachedData.data && cachedData.data.data) {
+                    cachedData.data.data.location_note = cachedData.location_note;
+                }
 
                 return res.json(cachedData);
             }
@@ -131,6 +174,11 @@ app.get('/api/air-quality', async (req, res) => {
                 staleCache.cached = true;
                 staleCache.stale = true;
                 staleCache.apiError = apiResponse.error;
+
+                // Ensure location_note is preserved in stale cache
+                if (staleCache.location_note && staleCache.data && staleCache.data.data) {
+                    staleCache.data.data.location_note = staleCache.location_note;
+                }
 
                 return res.json(staleCache);
             }
@@ -150,6 +198,15 @@ app.get('/api/air-quality', async (req, res) => {
             lastFetch: new Date().toISOString()
         };
 
+        // Preserve location_note if it exists
+        if (apiResponse.data && apiResponse.data.location_note) {
+            responseData.location_note = apiResponse.data.location_note;
+            // Also ensure it's in the nested data structure for frontend
+            if (responseData.data && responseData.data.data) {
+                responseData.data.data.location_note = apiResponse.data.location_note;
+            }
+        }
+
         res.json(responseData);
 
     } catch (error) {
@@ -161,6 +218,11 @@ app.get('/api/air-quality', async (req, res) => {
             staleCache.cached = true;
             staleCache.stale = true;
             staleCache.error = error.message;
+
+            // Ensure location_note is preserved in stale cache
+            if (staleCache.location_note && staleCache.data && staleCache.data.data) {
+                staleCache.data.data.location_note = staleCache.location_note;
+            }
 
             return res.json(staleCache);
         }
