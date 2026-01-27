@@ -51,9 +51,7 @@ function saveCacheData(data) {
         data: data,
         timestamp: Date.now(),
         cached: false,
-        lastFetch: new Date().toISOString(),
-        // Preserve location_note if it exists
-        location_note: data.data ? data.data.location_note : undefined
+        lastFetch: new Date().toISOString()
     };
 
     cache.set('air-quality', cacheData);
@@ -155,11 +153,6 @@ app.get('/api/air-quality', async (req, res) => {
                 const cacheAgeMinutes = Math.floor((Date.now() - cachedData.timestamp) / (1000 * 60));
                 cachedData.cacheAge = `${cacheAgeMinutes} minutes`;
 
-                // Ensure location_note is preserved in the response
-                if (cachedData.location_note && cachedData.data && cachedData.data.data) {
-                    cachedData.data.data.location_note = cachedData.location_note;
-                }
-
                 return res.json(cachedData);
             }
         }
@@ -174,11 +167,6 @@ app.get('/api/air-quality', async (req, res) => {
                 staleCache.cached = true;
                 staleCache.stale = true;
                 staleCache.apiError = apiResponse.error;
-
-                // Ensure location_note is preserved in stale cache
-                if (staleCache.location_note && staleCache.data && staleCache.data.data) {
-                    staleCache.data.data.location_note = staleCache.location_note;
-                }
 
                 return res.json(staleCache);
             }
@@ -198,15 +186,6 @@ app.get('/api/air-quality', async (req, res) => {
             lastFetch: new Date().toISOString()
         };
 
-        // Preserve location_note if it exists
-        if (apiResponse.data && apiResponse.data.location_note) {
-            responseData.location_note = apiResponse.data.location_note;
-            // Also ensure it's in the nested data structure for frontend
-            if (responseData.data && responseData.data.data) {
-                responseData.data.data.location_note = apiResponse.data.location_note;
-            }
-        }
-
         res.json(responseData);
 
     } catch (error) {
@@ -218,11 +197,6 @@ app.get('/api/air-quality', async (req, res) => {
             staleCache.cached = true;
             staleCache.stale = true;
             staleCache.error = error.message;
-
-            // Ensure location_note is preserved in stale cache
-            if (staleCache.location_note && staleCache.data && staleCache.data.data) {
-                staleCache.data.data.location_note = staleCache.location_note;
-            }
 
             return res.json(staleCache);
         }
